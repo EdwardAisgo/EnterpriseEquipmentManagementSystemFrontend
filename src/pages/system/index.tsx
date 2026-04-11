@@ -1,11 +1,37 @@
-import { Button, Card, Input, Select, message, Space, Modal, Tabs, Tag } from 'antd';
-import { PlusOutlined, DeleteOutlined, EditOutlined, DownloadOutlined, UploadOutlined, UserOutlined, TeamOutlined, LockOutlined, LogoutOutlined, DatabaseOutlined } from '@ant-design/icons';
-import { ProTable } from '@ant-design/pro-components';
+import {
+  DatabaseOutlined,
+  DeleteOutlined,
+  DownloadOutlined,
+  EditOutlined,
+  LockOutlined,
+  LogoutOutlined,
+  PlusOutlined,
+  TeamOutlined,
+  UploadOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-components';
-import React, { useState, useEffect } from 'react';
-import UserForm from './components/UserForm';
+import { ProTable } from '@ant-design/pro-components';
+import {
+  Button,
+  Card,
+  Input,
+  Modal,
+  message,
+  Select,
+  Space,
+  Tabs,
+  Tag,
+} from 'antd';
+import React, { useEffect, useState } from 'react';
+import {
+  createUser,
+  deleteUser,
+  getUsers,
+  updateUser,
+} from '@/services/business';
 import RoleForm from './components/RoleForm';
-import { getUsers, createUser } from '@/services/business';
+import UserForm from './components/UserForm';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -68,7 +94,14 @@ const SystemManagement: React.FC = () => {
       id: '1',
       name: '管理员',
       description: '系统管理员，拥有所有权限',
-      permissions: ['设备管理', '运行监控', '维护保养', '故障维修', '数据统计', '系统管理'],
+      permissions: [
+        '设备管理',
+        '运行监控',
+        '维护保养',
+        '故障维修',
+        '数据统计',
+        '系统管理',
+      ],
       createdAt: '2023-01-01',
     },
     {
@@ -136,7 +169,11 @@ const SystemManagement: React.FC = () => {
       dataIndex: 'role',
       key: 'role',
       render: (role) => (
-        <Tag color={role === 'admin' ? 'red' : role === 'manager' ? 'blue' : 'green'}>
+        <Tag
+          color={
+            role === 'admin' ? 'red' : role === 'manager' ? 'blue' : 'green'
+          }
+        >
           {role === 'admin' ? '管理员' : role === 'manager' ? '经理' : '员工'}
         </Tag>
       ),
@@ -167,6 +204,7 @@ const SystemManagement: React.FC = () => {
             type="link"
             danger
             icon={<DeleteOutlined />}
+            onClick={() => handleDeleteUser(record)}
           >
             删除
           </Button>
@@ -195,13 +233,20 @@ const SystemManagement: React.FC = () => {
       title: '权限',
       dataIndex: 'permissions',
       key: 'permissions',
-      render: (permissions) => (
-        <div>
-          {permissions.map((permission, index) => (
-            <span key={index} className="tag">{permission}</span>
-          ))}
-        </div>
-      ),
+      render: (permissions: any) => {
+        const permissionList: string[] = Array.isArray(permissions)
+          ? permissions
+          : [];
+        return (
+          <div>
+            {permissionList.map((permission) => (
+              <span key={permission} className="tag">
+                {permission}
+              </span>
+            ))}
+          </div>
+        );
+      },
     },
     {
       title: '创建时间',
@@ -284,24 +329,51 @@ const SystemManagement: React.FC = () => {
       message.success('用户创建成功');
       setUserVisible(false);
       fetchUsers();
-    } catch (error) {
-      message.error('用户创建失败');
+    } catch (error: any) {
+      const data = error?.data || error?.response?.data;
+      const errorMessage =
+        data?.message ||
+        (Array.isArray(data?.errors) ? data.errors[0]?.msg : null) ||
+        error?.message ||
+        '用户创建失败';
+      message.error(errorMessage);
     }
   };
 
-  const handleUpdateUser = (values: any) => {
+  const handleUpdateUser = async (values: any) => {
     if (!currentUser) return;
-    const updatedUsers = users.map((user) =>
-      user.id === currentUser.id
-        ? {
-            ...user,
-            ...values,
-          }
-        : user
-    );
-    setUsers(updatedUsers);
-    setUserVisible(false);
-    message.success('用户更新成功');
+    try {
+      await updateUser(currentUser.id, values);
+      message.success('用户更新成功');
+      setUserVisible(false);
+      fetchUsers();
+    } catch (error: any) {
+      const data = error?.data || error?.response?.data;
+      const errorMessage =
+        data?.message ||
+        (Array.isArray(data?.errors) ? data.errors[0]?.msg : null) ||
+        error?.message ||
+        '用户更新失败';
+      message.error(errorMessage);
+    }
+  };
+
+  const handleDeleteUser = async (record: User) => {
+    Modal.confirm({
+      title: '确认删除',
+      content: `确定要删除用户 ${record.username} 吗？`,
+      onOk: async () => {
+        try {
+          await deleteUser(record.id);
+          message.success('删除成功');
+          fetchUsers();
+        } catch (error: any) {
+          const data = error?.data || error?.response?.data;
+          const errorMessage = data?.message || error?.message || '删除失败';
+          message.error(errorMessage);
+        }
+      },
+    });
   };
 
   const handleAddRole = (values: any) => {
@@ -323,7 +395,7 @@ const SystemManagement: React.FC = () => {
             ...role,
             ...values,
           }
-        : role
+        : role,
     );
     setRoles(updatedRoles);
     setRoleVisible(false);
@@ -342,8 +414,21 @@ const SystemManagement: React.FC = () => {
     <div>
       <Card title="系统管理">
         <Tabs defaultActiveKey="users">
-          <TabPane tab={<><UserOutlined /> 用户管理</>} key="users">
-            <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
+          <TabPane
+            tab={
+              <>
+                <UserOutlined /> 用户管理
+              </>
+            }
+            key="users"
+          >
+            <div
+              style={{
+                marginBottom: 16,
+                display: 'flex',
+                justifyContent: 'flex-end',
+              }}
+            >
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
@@ -365,7 +450,14 @@ const SystemManagement: React.FC = () => {
               pagination={{ pageSize: 10 }}
             />
           </TabPane>
-          <TabPane tab={<><TeamOutlined /> 角色管理</>} key="roles">
+          <TabPane
+            tab={
+              <>
+                <TeamOutlined /> 角色管理
+              </>
+            }
+            key="roles"
+          >
             <Card
               extra={
                 <Button
@@ -391,12 +483,26 @@ const SystemManagement: React.FC = () => {
               />
             </Card>
           </TabPane>
-          <TabPane tab={<><LockOutlined /> 权限管理</>} key="permissions">
+          <TabPane
+            tab={
+              <>
+                <LockOutlined /> 权限管理
+              </>
+            }
+            key="permissions"
+          >
             <Card>
               <p>权限管理功能正在开发中...</p>
             </Card>
           </TabPane>
-          <TabPane tab={<><LogoutOutlined /> 日志管理</>} key="logs">
+          <TabPane
+            tab={
+              <>
+                <LogoutOutlined /> 日志管理
+              </>
+            }
+            key="logs"
+          >
             <Card>
               <ProTable
                 columns={logColumns}
@@ -409,7 +515,14 @@ const SystemManagement: React.FC = () => {
               />
             </Card>
           </TabPane>
-          <TabPane tab={<><DatabaseOutlined /> 数据备份</>} key="backup">
+          <TabPane
+            tab={
+              <>
+                <DatabaseOutlined /> 数据备份
+              </>
+            }
+            key="backup"
+          >
             <Card>
               <Space direction="vertical" style={{ width: '100%' }}>
                 <Button
@@ -419,10 +532,7 @@ const SystemManagement: React.FC = () => {
                 >
                   备份数据
                 </Button>
-                <Button
-                  icon={<UploadOutlined />}
-                  onClick={handleRestore}
-                >
+                <Button icon={<UploadOutlined />} onClick={handleRestore}>
                   恢复数据
                 </Button>
               </Space>

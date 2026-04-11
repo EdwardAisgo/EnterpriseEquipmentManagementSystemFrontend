@@ -23,10 +23,10 @@ export default [
     ],
   },
   {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
+    path: '/analytics',
+    name: '数据统计',
+    icon: 'barChart',
+    component: './analytics',
   },
   {
     path: '/equipment',
@@ -53,12 +53,6 @@ export default [
     component: './repair',
   },
   {
-    path: '/analytics',
-    name: '数据统计',
-    icon: 'barChart',
-    component: './analytics',
-  },
-  {
     path: '/system',
     name: '系统管理',
     icon: 'setting',
@@ -82,14 +76,8 @@ export default [
     ],
   },
   {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './table-list',
-  },
-  {
     path: '/',
-    redirect: '/welcome',
+    redirect: '/analytics',
   },
   {
     path: '*',

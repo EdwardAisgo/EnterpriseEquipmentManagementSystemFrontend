@@ -103,4 +103,9 @@ declare namespace API {
     description?: string;
     type?: NoticeIconItemType;
   };
+
+  type ChangePasswordParams = {
+    oldPassword?: string;
+    newPassword?: string;
+  };
 }

@@ -1,15 +1,17 @@
-import { Button, Card, Input, Select, message, Space, Modal, Alert, Badge, Tabs } from 'antd';
-import { PlusOutlined, CalendarOutlined, BellOutlined } from '@ant-design/icons';
-import { ProTable } from '@ant-design/pro-components';
+import { CalendarOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-components';
-import React, { useState, useEffect } from 'react';
+import { ProTable } from '@ant-design/pro-components';
+import { Badge, Button, Card, message, Space, Tabs } from 'antd';
+import React, { useEffect, useState } from 'react';
+import {
+  createMaintenance,
+  createMaintenancePlan,
+  getMaintenancePlans,
+  getMaintenances,
+} from '@/services/business';
+import { getDevices } from '@/services/equipment';
 import MaintenancePlanForm from './components/MaintenancePlanForm';
 import MaintenanceRecordForm from './components/MaintenanceRecordForm';
-import { getMaintenances, createMaintenance, getMaintenancePlans, createMaintenancePlan } from '@/services/business';
-import { getDevices } from '@/services/equipment';
-
-const { Search } = Input;
-const { Option } = Select;
 
 type MaintenancePlan = {
   id: string;
@@ -47,8 +49,12 @@ const MaintenanceManagement: React.FC = () => {
   const [recordVisible, setRecordVisible] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<MaintenancePlan | null>(null);
   const [loading, setLoading] = useState(false);
-  const [maintenancePlans, setMaintenancePlans] = useState<MaintenancePlan[]>([]);
-  const [maintenanceRecords, setMaintenanceRecords] = useState<MaintenanceRecord[]>([]);
+  const [maintenancePlans, setMaintenancePlans] = useState<MaintenancePlan[]>(
+    [],
+  );
+  const [maintenanceRecords, setMaintenanceRecords] = useState<
+    MaintenanceRecord[]
+  >([]);
   const [devices, setDevices] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('plan');
 
@@ -248,8 +254,18 @@ const MaintenanceManagement: React.FC = () => {
             label: '维护计划',
             children: (
               <>
-                <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button type="primary" icon={<PlusOutlined />} onClick={() => setPlanVisible(true)}>
+                <div
+                  style={{
+                    marginBottom: 16,
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                  }}
+                >
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setPlanVisible(true)}
+                  >
                     制定维护计划
                   </Button>
                 </div>
@@ -269,8 +285,18 @@ const MaintenanceManagement: React.FC = () => {
             label: '维护记录',
             children: (
               <>
-                <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button type="primary" icon={<PlusOutlined />} onClick={() => setRecordVisible(true)}>
+                <div
+                  style={{
+                    marginBottom: 16,
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                  }}
+                >
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setRecordVisible(true)}
+                  >
                     添加维护记录
                   </Button>
                 </div>

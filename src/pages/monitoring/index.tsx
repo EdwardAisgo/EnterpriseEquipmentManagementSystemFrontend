@@ -1,11 +1,16 @@
-import { Button, Card, Col, Row, Statistic, message, Space, Select } from 'antd';
-import { PlusOutlined, DashboardOutlined, ThunderboltOutlined, HourglassOutlined } from '@ant-design/icons';
-import { ProTable } from '@ant-design/pro-components';
+import {
+  DashboardOutlined,
+  HourglassOutlined,
+  PlusOutlined,
+  ThunderboltOutlined,
+} from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-components';
-import React, { useState, useEffect } from 'react';
-import RunningDataForm from './components/RunningDataForm';
-import { getRunningData, createRunningData } from '@/services/business';
+import { ProTable } from '@ant-design/pro-components';
+import { Button, Card, Col, message, Row, Statistic } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { createRunningData, getRunningData } from '@/services/business';
 import { getDevices } from '@/services/equipment';
+import RunningDataForm from './components/RunningDataForm';
 
 const Monitoring: React.FC = () => {
   const [visible, setVisible] = useState(false);
@@ -27,7 +32,7 @@ const Monitoring: React.FC = () => {
     try {
       const res = await getRunningData();
       setRunningData(res.runningData || []);
-    } catch (error) {
+    } catch (_error) {
       message.error('获取运行数据失败');
     } finally {
       setLoading(false);
@@ -45,7 +50,7 @@ const Monitoring: React.FC = () => {
       message.success('运行数据记录成功');
       setVisible(false);
       fetchRunningData();
-    } catch (error) {
+    } catch (_error) {
       message.error('记录失败');
     }
   };
@@ -126,8 +131,18 @@ const Monitoring: React.FC = () => {
         </Col>
       </Row>
 
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setVisible(true)}>
+      <div
+        style={{
+          marginBottom: 16,
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
+      >
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => setVisible(true)}
+        >
           上报运行数据
         </Button>
       </div>

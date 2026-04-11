@@ -1,5 +1,14 @@
-import { Button, Form, Input, DatePicker, InputNumber, Modal, Select } from 'antd';
-import React, { useEffect } from 'react';
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { getUsers } from '@/services/business';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -11,12 +20,21 @@ interface RunningDataFormProps {
   devices: any[];
 }
 
-const RunningDataForm: React.FC<RunningDataFormProps> = ({ visible, onCancel, onSubmit, devices }) => {
+const RunningDataForm: React.FC<RunningDataFormProps> = ({
+  visible,
+  onCancel,
+  onSubmit,
+  devices,
+}) => {
   const [form] = Form.useForm();
+  const [users, setUsers] = useState<any[]>([]);
 
   useEffect(() => {
     if (visible) {
       form.resetFields();
+      getUsers().then((res) => {
+        setUsers(res.users || []);
+      });
     }
   }, [visible, form]);
 
@@ -46,8 +64,16 @@ const RunningDataForm: React.FC<RunningDataFormProps> = ({ visible, onCancel, on
           label="选择设备"
           rules={[{ required: true, message: '请选择设备' }]}
         >
-          <Select placeholder="请选择设备">
-            {devices.map(device => (
+          <Select
+            placeholder="请选择设备"
+            showSearch
+            filterOption={(input, option) =>
+              String(option?.children ?? '')
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          >
+            {devices.map((device) => (
               <Option key={device.id} value={device.id}>
                 {device.deviceCode} - {device.name}
               </Option>
@@ -66,7 +92,10 @@ const RunningDataForm: React.FC<RunningDataFormProps> = ({ visible, onCancel, on
           label="运行时长"
           rules={[{ required: true, message: '请输入运行时长' }]}
         >
-          <InputNumber style={{ width: '100%' }} placeholder="请输入运行时长（小时）" />
+          <InputNumber
+            style={{ width: '100%' }}
+            placeholder="请输入运行时长（小时）"
+          />
         </Form.Item>
         <Form.Item
           name="production"
@@ -85,14 +114,25 @@ const RunningDataForm: React.FC<RunningDataFormProps> = ({ visible, onCancel, on
         <Form.Item
           name="operator"
           label="操作员"
-          rules={[{ required: true, message: '请输入操作员' }]}
+          rules={[{ required: true, message: '请选择操作员' }]}
         >
-          <Input placeholder="请输入操作员" />
+          <Select
+            placeholder="请选择操作员"
+            showSearch
+            filterOption={(input, option) =>
+              String(option?.children ?? '')
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          >
+            {users.map((user) => (
+              <Option key={user.id} value={user.name}>
+                {user.name} ({user.username})
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
-        <Form.Item
-          name="notes"
-          label="备注"
-        >
+        <Form.Item name="notes" label="备注">
           <TextArea rows={3} placeholder="请输入备注" />
         </Form.Item>
       </Form>

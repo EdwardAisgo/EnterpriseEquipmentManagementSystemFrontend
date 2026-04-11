@@ -1,4 +1,4 @@
-import { Button, Form, Input, Select, Modal } from 'antd';
+import { Button, Form, Input, Modal, Select } from 'antd';
 import React, { useEffect } from 'react';
 
 const { Option } = Select;
@@ -20,7 +20,12 @@ interface UserFormProps {
   user: User | null;
 }
 
-const UserForm: React.FC<UserFormProps> = ({ visible, onCancel, onSubmit, user }) => {
+const UserForm: React.FC<UserFormProps> = ({
+  visible,
+  onCancel,
+  onSubmit,
+  user,
+}) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -55,7 +60,11 @@ const UserForm: React.FC<UserFormProps> = ({ visible, onCancel, onSubmit, user }
         <Form.Item
           name="username"
           label="用户名"
-          rules={[{ required: true, message: '请输入用户名' }]}
+          rules={[
+            { required: true, message: '请输入用户名' },
+            { min: 3, message: '用户名至少 3 位' },
+            { max: 50, message: '用户名最多 50 位' },
+          ]}
         >
           <Input placeholder="请输入用户名" />
         </Form.Item>
@@ -69,7 +78,10 @@ const UserForm: React.FC<UserFormProps> = ({ visible, onCancel, onSubmit, user }
         <Form.Item
           name="email"
           label="邮箱"
-          rules={[{ required: true, message: '请输入邮箱' }, { type: 'email', message: '请输入正确的邮箱格式' }]}
+          rules={[
+            { required: true, message: '请输入邮箱' },
+            { type: 'email', message: '请输入正确的邮箱格式' },
+          ]}
         >
           <Input placeholder="请输入邮箱" />
         </Form.Item>
@@ -89,7 +101,10 @@ const UserForm: React.FC<UserFormProps> = ({ visible, onCancel, onSubmit, user }
             <Form.Item
               name="password"
               label="密码"
-              rules={[{ required: true, message: '请输入密码' }, { min: 6, message: '密码至少 6 位' }]}
+              rules={[
+                { required: true, message: '请输入密码' },
+                { min: 6, message: '密码至少 6 位' },
+              ]}
             >
               <Input.Password placeholder="请输入密码" />
             </Form.Item>

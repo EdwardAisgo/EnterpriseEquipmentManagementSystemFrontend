@@ -1,15 +1,18 @@
 import {
+  LockOutlined,
   LogoutOutlined,
   SettingOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { history, useModel } from '@umijs/max';
 import type { MenuProps } from 'antd';
-import { Spin } from 'antd';
+import { message, Spin } from 'antd';
 import { createStyles } from 'antd-style';
-import React from 'react';
+import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
+import ChangePasswordForm from '@/pages/system/components/ChangePasswordForm';
 import { outLogin } from '@/services/ant-design-pro/api';
+import { changePassword } from '@/services/business';
 import HeaderDropdown from '../HeaderDropdown';
 
 export type GlobalHeaderRightProps = {
@@ -45,6 +48,8 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({
   menu,
   children,
 }) => {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
   /**
    * 退出登录，并且将当前的 url 保存
    */
@@ -78,7 +83,26 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({
       loginOut();
       return;
     }
+    if (key === 'password') {
+      setPasswordVisible(true);
+      return;
+    }
     history.push(`/account/${key}`);
+  };
+
+  const handleChangePassword = async (values: API.ChangePasswordParams) => {
+    try {
+      await changePassword(values);
+      message.success('密码修改成功，请重新登录');
+      setPasswordVisible(false);
+      // 修改成功后强制退出登录
+      setTimeout(() => {
+        setInitialState((s) => ({ ...s, currentUser: undefined }));
+        loginOut();
+      }, 1500);
+    } catch (error: any) {
+      message.error(error?.data?.message || error?.message || '密码修改失败');
+    }
   };
 
   const loading = (
@@ -117,10 +141,24 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({
             label: '个人设置',
           },
           {
+            key: 'password',
+            icon: <LockOutlined />,
+            label: '修改密码',
+          },
+          {
             type: 'divider' as const,
           },
         ]
-      : []),
+      : [
+          {
+            key: 'password',
+            icon: <LockOutlined />,
+            label: '修改密码',
+          },
+          {
+            type: 'divider' as const,
+          },
+        ]),
     {
       key: 'logout',
       icon: <LogoutOutlined />,
@@ -129,14 +167,21 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({
   ];
 
   return (
-    <HeaderDropdown
-      menu={{
-        selectedKeys: [],
-        onClick: onMenuClick,
-        items: menuItems,
-      }}
-    >
-      {children}
-    </HeaderDropdown>
+    <>
+      <HeaderDropdown
+        menu={{
+          selectedKeys: [],
+          onClick: onMenuClick,
+          items: menuItems,
+        }}
+      >
+        {children}
+      </HeaderDropdown>
+      <ChangePasswordForm
+        visible={passwordVisible}
+        onCancel={() => setPasswordVisible(false)}
+        onSubmit={handleChangePassword}
+      />
+    </>
   );
 };

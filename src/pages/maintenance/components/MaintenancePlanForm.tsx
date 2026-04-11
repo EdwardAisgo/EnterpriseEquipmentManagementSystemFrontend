@@ -1,5 +1,14 @@
-import { Button, Form, Input, DatePicker, InputNumber, Select, Modal } from 'antd';
-import React from 'react';
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { getUsers } from '@/services/business';
 
 const { Option } = Select;
 
@@ -10,8 +19,22 @@ interface MaintenancePlanFormProps {
   devices: any[];
 }
 
-const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({ visible, onCancel, onSubmit, devices }) => {
+const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({
+  visible,
+  onCancel,
+  onSubmit,
+  devices,
+}) => {
   const [form] = Form.useForm();
+  const [users, setUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (visible) {
+      getUsers().then((res) => {
+        setUsers(res.users || []);
+      });
+    }
+  }, [visible]);
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
@@ -27,7 +50,9 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({ visible, onCa
           nextMaintenance.setMonth(nextMaintenance.getMonth() + values.cycle);
           break;
         case 'year':
-          nextMaintenance.setFullYear(nextMaintenance.getFullYear() + values.cycle);
+          nextMaintenance.setFullYear(
+            nextMaintenance.getFullYear() + values.cycle,
+          );
           break;
       }
 
@@ -59,8 +84,16 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({ visible, onCa
           label="选择设备"
           rules={[{ required: true, message: '请选择设备' }]}
         >
-          <Select placeholder="请选择设备">
-            {devices.map(device => (
+          <Select
+            placeholder="请选择设备"
+            showSearch
+            filterOption={(input, option) =>
+              String(option?.children ?? '')
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          >
+            {devices.map((device) => (
               <Option key={device.id} value={device.id}>
                 {device.deviceCode} - {device.name}
               </Option>
@@ -73,9 +106,9 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({ visible, onCa
           rules={[{ required: true, message: '请选择维护类型' }]}
         >
           <Select placeholder="请选择维护类型">
-            <Option value="日常维护">日常维护</Option>
-            <Option value="定期维护">定期维护</Option>
-            <Option value="专项维护">专项维护</Option>
+            <Option value="preventive">预防性维护</Option>
+            <Option value="corrective">纠正性维护</Option>
+            <Option value="predictive">预测性维护</Option>
           </Select>
         </Form.Item>
         <Form.Item
@@ -107,9 +140,23 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({ visible, onCa
         <Form.Item
           name="responsiblePerson"
           label="负责人"
-          rules={[{ required: true, message: '请输入负责人' }]}
+          rules={[{ required: true, message: '请选择负责人' }]}
         >
-          <Input placeholder="请输入负责人" />
+          <Select
+            placeholder="请选择负责人"
+            showSearch
+            filterOption={(input, option) =>
+              String(option?.children ?? '')
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          >
+            {users.map((user) => (
+              <Option key={user.id} value={user.name}>
+                {user.name} ({user.username})
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
       </Form>
     </Modal>

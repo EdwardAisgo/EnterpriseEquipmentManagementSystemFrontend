@@ -1,8 +1,15 @@
-import { Button, Form, Input, DatePicker, InputNumber, Select, Modal } from 'antd';
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+} from 'antd';
 import React from 'react';
 
 const { Option } = Select;
-const { TextArea } = Input;
 
 interface CreateFormProps {
   visible: boolean;
@@ -10,7 +17,11 @@ interface CreateFormProps {
   onSubmit: (values: any) => void;
 }
 
-const CreateForm: React.FC<CreateFormProps> = ({ visible, onCancel, onSubmit }) => {
+const CreateForm: React.FC<CreateFormProps> = ({
+  visible,
+  onCancel,
+  onSubmit,
+}) => {
   const [form] = Form.useForm();
 
   const handleSubmit = () => {

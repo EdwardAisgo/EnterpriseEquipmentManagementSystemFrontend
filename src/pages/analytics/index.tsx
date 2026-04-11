@@ -1,227 +1,289 @@
-import { Card, Row, Col, DatePicker, Select, Space } from 'antd';
-import React, { useState, useEffect, useRef } from 'react';
+import {
+  Card,
+  Col,
+  DatePicker,
+  message,
+  Row,
+  Select,
+  Space,
+  Spin,
+  Table,
+  Tag,
+} from 'antd';
+import dayjs from 'dayjs';
 import * as echarts from 'echarts';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  getDeviceStatusReport,
+  getMaintenanceCostReport,
+  getMaintenanceTypeReport,
+  getWarrantyExpiringReport,
+} from '@/services/report';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-// 模拟数据
-const maintenanceCostData = [
-  { month: '1月', cost: 5000 },
-  { month: '2月', cost: 3000 },
-  { month: '3月', cost: 4500 },
-  { month: '4月', cost: 6000 },
-  { month: '5月', cost: 4000 },
-  { month: '6月', cost: 5500 },
-];
-
-const equipmentStatusData = [
-  { name: '正常运行', value: 60 },
-  { name: '维护中', value: 20 },
-  { name: '故障中', value: 10 },
-  { name: '已报废', value: 10 },
-];
-
-const failureRateData = [
-  { month: '1月', rate: 2 },
-  { month: '2月', rate: 3 },
-  { month: '3月', rate: 1 },
-  { month: '4月', rate: 4 },
-  { month: '5月', rate: 2 },
-  { month: '6月', rate: 1.5 },
-];
-
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF'];
 
 const AnalyticsManagement: React.FC = () => {
-  const [dateRange, setDateRange] = useState<any>(null);
-  const [equipmentType, setEquipmentType] = useState<string>('all');
-  
+  const [loading, setLoading] = useState(false);
+  const [year, setYear] = useState<number>(dayjs().year());
+  const [warrantyDevices, setWarrantyDevices] = useState<any[]>([]);
+
   const costChartRef = useRef<HTMLDivElement>(null);
   const statusChartRef = useRef<HTMLDivElement>(null);
-  const rateChartRef = useRef<HTMLDivElement>(null);
-  
+  const typeChartRef = useRef<HTMLDivElement>(null);
+
   const costChartInstance = useRef<echarts.ECharts | null>(null);
   const statusChartInstance = useRef<echarts.ECharts | null>(null);
-  const rateChartInstance = useRef<echarts.ECharts | null>(null);
+  const typeChartInstance = useRef<echarts.ECharts | null>(null);
 
-  const handleDateChange = (dates: any) => {
-    setDateRange(dates);
+  const fetchReportData = async () => {
+    setLoading(true);
+    try {
+      const [statusRes, costRes, typeRes, warrantyRes] = await Promise.all([
+        getDeviceStatusReport(),
+        getMaintenanceCostReport(year),
+        getMaintenanceTypeReport(),
+        getWarrantyExpiringReport(),
+      ]);
+
+      setWarrantyDevices(warrantyRes.expiringDevices || []);
+
+      // 更新设备状态分布图表
+      if (statusChartInstance.current && statusRes.statusCounts) {
+        const statusMap: Record<string, string> = {
+          normal: '正常运行',
+          maintenance: '维护中',
+          fault: '故障中',
+          scrapped: '已报废',
+        };
+        const statusData = statusRes.statusCounts.map((item: any) => ({
+          name: statusMap[item.status] || item.status,
+          value: parseInt(item.count, 10),
+        }));
+
+        statusChartInstance.current.setOption({
+          series: [{ data: statusData }],
+        });
+      }
+
+      // 更新维护成本图表
+      if (costChartInstance.current && costRes.monthlyCosts) {
+        const months = Array.from({ length: 12 }, (_, i) => `${i + 1}月`);
+        const costs = Array(12).fill(0);
+        costRes.monthlyCosts.forEach((item: any) => {
+          costs[item.month - 1] = parseFloat(item.totalCost);
+        });
+
+        costChartInstance.current.setOption({
+          xAxis: { data: months },
+          series: [{ data: costs }],
+        });
+      }
+
+      // 更新维护类型图表
+      if (typeChartInstance.current && typeRes.typeCounts) {
+        const typeMap: Record<string, string> = {
+          preventive: '预防性维护',
+          corrective: '纠正性维护',
+          predictive: '预测性维护',
+        };
+        const typeData = typeRes.typeCounts.map((item: any) => ({
+          name: typeMap[item.maintenanceType] || item.maintenanceType,
+          value: parseInt(item.count, 10),
+        }));
+
+        typeChartInstance.current.setOption({
+          series: [{ data: typeData }],
+        });
+      }
+    } catch (error) {
+      message.error('获取统计数据失败');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleTypeChange = (value: string) => {
-    setEquipmentType(value);
-  };
+  const warrantyColumns = [
+    { title: '设备编号', dataIndex: 'deviceCode', key: 'deviceCode' },
+    { title: '设备名称', dataIndex: 'name', key: 'name' },
+    { title: '所属部门', dataIndex: ['Department', 'name'], key: 'deptName' },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string) => {
+        const statusMap: Record<string, { text: string; color: string }> = {
+          normal: { text: '正常', color: 'green' },
+          maintenance: { text: '维护中', color: 'blue' },
+          fault: { text: '故障', color: 'red' },
+          scrapped: { text: '已报废', color: 'grey' },
+        };
+        const config = statusMap[status] || { text: status, color: 'default' };
+        return <Tag color={config.color}>{config.text}</Tag>;
+      },
+    },
+    {
+      title: '质保到期日',
+      dataIndex: 'warrantyEndDate',
+      key: 'warrantyEndDate',
+      render: (date: string) => dayjs(date).format('YYYY-MM-DD'),
+    },
+    {
+      title: '剩余天数',
+      key: 'remainingDays',
+      render: (_: any, record: any) => {
+        const days = dayjs(record.warrantyEndDate).diff(dayjs(), 'day');
+        return (
+          <span
+            style={{ color: days <= 7 ? 'red' : 'orange', fontWeight: 'bold' }}
+          >
+            {days} 天
+          </span>
+        );
+      },
+    },
+  ];
+
+  // ... charts init and resize logic ...
 
   useEffect(() => {
-    // 初始化月度维护成本图表
+    // 初始化图表
     if (costChartRef.current) {
       costChartInstance.current = echarts.init(costChartRef.current);
-      const costOption = {
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow'
-          }
-        },
-        legend: {
-          data: ['维护成本']
-        },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
-        xAxis: {
-          type: 'category',
-          data: maintenanceCostData.map(item => item.month)
-        },
-        yAxis: {
-          type: 'value'
-        },
+      costChartInstance.current.setOption({
+        title: { text: '月度维护成本趋势', left: 'center' },
+        tooltip: { trigger: 'axis' },
+        xAxis: { type: 'category', data: [] },
+        yAxis: { type: 'value', name: '金额 (元)' },
         series: [
           {
             name: '维护成本',
             type: 'bar',
-            data: maintenanceCostData.map(item => item.cost),
-            itemStyle: {
-              color: '#8884d8'
-            }
-          }
-        ]
-      };
-      costChartInstance.current.setOption(costOption);
+            data: [],
+            itemStyle: { color: '#1890ff' },
+          },
+        ],
+      });
     }
 
-    // 初始化设备状态分布图表
     if (statusChartRef.current) {
       statusChartInstance.current = echarts.init(statusChartRef.current);
-      const statusOption = {
-        tooltip: {
-          trigger: 'item'
-        },
-        legend: {
-          orient: 'vertical',
-          left: 'left'
-        },
+      statusChartInstance.current.setOption({
+        title: { text: '设备状态分布', left: 'center' },
+        tooltip: { trigger: 'item' },
+        legend: { orient: 'vertical', left: 'left', top: 'center' },
         series: [
           {
             name: '设备状态',
             type: 'pie',
             radius: '50%',
-            data: equipmentStatusData,
+            data: [],
             emphasis: {
               itemStyle: {
                 shadowBlur: 10,
                 shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-              }
+                shadowColor: 'rgba(0, 0, 0, 0.5)',
+              },
             },
-            itemStyle: {
-              color: function(params: any) {
-                return COLORS[params.dataIndex % COLORS.length];
-              }
-            },
-            label: {
-              formatter: '{b}: {d}%'
-            }
-          }
-        ]
-      };
-      statusChartInstance.current.setOption(statusOption);
+          },
+        ],
+      });
     }
 
-    // 初始化设备故障率趋势图表
-    if (rateChartRef.current) {
-      rateChartInstance.current = echarts.init(rateChartRef.current);
-      const rateOption = {
-        tooltip: {
-          trigger: 'axis'
-        },
-        legend: {
-          data: ['故障率(%)']
-        },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
-        xAxis: {
-          type: 'category',
-          data: failureRateData.map(item => item.month)
-        },
-        yAxis: {
-          type: 'value'
-        },
+    if (typeChartRef.current) {
+      typeChartInstance.current = echarts.init(typeChartRef.current);
+      typeChartInstance.current.setOption({
+        title: { text: '维护类型占比', left: 'center' },
+        tooltip: { trigger: 'item' },
+        legend: { orient: 'vertical', left: 'left', top: 'center' },
         series: [
           {
-            name: '故障率(%)',
-            type: 'line',
-            data: failureRateData.map(item => item.rate),
+            name: '维护类型',
+            type: 'pie',
+            radius: ['40%', '70%'],
+            avoidLabelOverlap: false,
             itemStyle: {
-              color: '#82ca9d'
+              borderRadius: 10,
+              borderColor: '#fff',
+              borderWidth: 2,
             },
-            symbol: 'circle',
-            symbolSize: 8
-          }
-        ]
-      };
-      rateChartInstance.current.setOption(rateOption);
+            label: { show: false, position: 'center' },
+            emphasis: {
+              label: { show: true, fontSize: '20', fontWeight: 'bold' },
+            },
+            labelLine: { show: false },
+            data: [],
+          },
+        ],
+      });
     }
 
-    // 响应式调整
     const handleResize = () => {
       costChartInstance.current?.resize();
       statusChartInstance.current?.resize();
-      rateChartInstance.current?.resize();
+      typeChartInstance.current?.resize();
     };
-
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
       costChartInstance.current?.dispose();
       statusChartInstance.current?.dispose();
-      rateChartInstance.current?.dispose();
+      typeChartInstance.current?.dispose();
     };
   }, []);
 
+  useEffect(() => {
+    fetchReportData();
+  }, [year]);
+
   return (
-    <div>
-      <Card
-        title="数据统计分析"
-        extra={
+    <div style={{ padding: '24px' }}>
+      <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <Card>
           <Space>
-            <RangePicker onChange={handleDateChange} />
-            <Select defaultValue="all" style={{ width: 120 }} onChange={handleTypeChange}>
-              <Option value="all">全部设备</Option>
-              <Option value="production">生产设备</Option>
-              <Option value="packaging">包装设备</Option>
-              <Option value="processing">加工设备</Option>
-            </Select>
+            <span>选择年份：</span>
+            <DatePicker
+              picker="year"
+              defaultValue={dayjs()}
+              onChange={(date) => date && setYear(date.year())}
+              allowClear={false}
+            />
           </Space>
-        }
-      >
-        <Row gutter={[16, 16]}>
-          <Col span={24} md={12}>
-            <Card title="月度维护成本">
-              <div ref={costChartRef} style={{ width: '100%', height: 300 }} />
-            </Card>
-          </Col>
-          <Col span={24} md={12}>
-            <Card title="设备状态分布">
-              <div ref={statusChartRef} style={{ width: '100%', height: 300 }} />
-            </Card>
-          </Col>
-          <Col span={24}>
-            <Card title="设备故障率趋势">
-              <div ref={rateChartRef} style={{ width: '100%', height: 300 }} />
-            </Card>
-          </Col>
-        </Row>
-      </Card>
+        </Card>
+
+        <Spin spinning={loading}>
+          <Row gutter={[16, 16]}>
+            <Col span={24}>
+              <Card>
+                <div ref={costChartRef} style={{ height: '400px' }} />
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card>
+                <div ref={statusChartRef} style={{ height: '400px' }} />
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card>
+                <div ref={typeChartRef} style={{ height: '400px' }} />
+              </Card>
+            </Col>
+            <Col span={24}>
+              <Card title="即将到期的设备质保 (30天内)">
+                <Table
+                  columns={warrantyColumns}
+                  dataSource={warrantyDevices}
+                  rowKey="id"
+                  pagination={{ pageSize: 5 }}
+                />
+              </Card>
+            </Col>
+          </Row>
+        </Spin>
+      </Space>
     </div>
   );
 };

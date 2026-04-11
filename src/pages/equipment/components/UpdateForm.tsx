@@ -1,5 +1,15 @@
-import { Button, Form, Input, DatePicker, InputNumber, Select, Modal } from 'antd';
-import React, { useEffect } from 'react';
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+} from 'antd';
+import dayjs from 'dayjs';
+import React, { useEffect, useState } from 'react';
+import { getDepartments } from '@/services/business';
 
 const { Option } = Select;
 
@@ -9,6 +19,7 @@ interface Equipment {
   name: string;
   type: string;
   model: string;
+  departmentId?: number;
   purchaseDate: string;
   purchasePrice: number;
   location: string;
@@ -26,18 +37,37 @@ interface UpdateFormProps {
   values: Equipment | null;
 }
 
-const UpdateForm: React.FC<UpdateFormProps> = ({ visible, onCancel, onSubmit, values }) => {
+const UpdateForm: React.FC<UpdateFormProps> = ({
+  visible,
+  onCancel,
+  onSubmit,
+  values,
+}) => {
   const [form] = Form.useForm();
+  const [departments, setDepartments] = useState<any[]>([]);
 
   useEffect(() => {
-    if (values) {
-      form.setFieldsValue(values);
+    if (visible) {
+      getDepartments().then((res) => {
+        setDepartments(res.departments || []);
+      });
     }
-  }, [values, form]);
+  }, [visible]);
+
+  useEffect(() => {
+    if (visible && values) {
+      form.setFieldsValue({
+        ...values,
+        purchaseDate: values.purchaseDate ? dayjs(values.purchaseDate) : null,
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [values, visible, form]);
 
   const handleSubmit = () => {
-    form.validateFields().then((values) => {
-      onSubmit(values);
+    form.validateFields().then((fieldsValue) => {
+      onSubmit(fieldsValue);
     });
   };
 
@@ -69,6 +99,19 @@ const UpdateForm: React.FC<UpdateFormProps> = ({ visible, onCancel, onSubmit, va
           rules={[{ required: true, message: '请输入设备名称' }]}
         >
           <Input placeholder="请输入设备名称" />
+        </Form.Item>
+        <Form.Item
+          name="departmentId"
+          label="所属部门"
+          rules={[{ required: true, message: '请选择所属部门' }]}
+        >
+          <Select placeholder="请选择所属部门">
+            {departments.map((dept) => (
+              <Option key={dept.id} value={dept.id}>
+                {dept.name}
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
         <Form.Item
           name="type"

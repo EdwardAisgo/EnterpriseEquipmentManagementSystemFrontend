@@ -1,5 +1,5 @@
-import { Button, Form, Input, Select, Modal, Upload, DatePicker } from 'antd';
 import { FileImageOutlined } from '@ant-design/icons';
+import { Button, DatePicker, Form, Input, Modal, Select, Upload } from 'antd';
 import React from 'react';
 
 const { TextArea } = Input;
@@ -12,7 +12,12 @@ interface RepairRequestFormProps {
   devices: any[];
 }
 
-const RepairRequestForm: React.FC<RepairRequestFormProps> = ({ visible, onCancel, onSubmit, devices }) => {
+const RepairRequestForm: React.FC<RepairRequestFormProps> = ({
+  visible,
+  onCancel,
+  onSubmit,
+  devices,
+}) => {
   const [form] = Form.useForm();
 
   const handleSubmit = () => {
@@ -26,7 +31,7 @@ const RepairRequestForm: React.FC<RepairRequestFormProps> = ({ visible, onCancel
     name: 'file',
     multiple: true,
     action: 'https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188',
-    onChange(info) {
+    onChange(info: any) {
       const { status } = info.file;
       if (status !== 'uploading') {
         console.log(info.file, info.fileList);
@@ -88,10 +93,7 @@ const RepairRequestForm: React.FC<RepairRequestFormProps> = ({ visible, onCancel
         >
           <TextArea rows={4} placeholder="请详细描述故障情况" />
         </Form.Item>
-        <Form.Item
-          name="images"
-          label="故障图片"
-        >
+        <Form.Item name="images" label="故障图片">
           <Upload {...uploadProps} listType="picture-card">
             <div>
               <FileImageOutlined />

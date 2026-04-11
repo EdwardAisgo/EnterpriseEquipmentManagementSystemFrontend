@@ -81,3 +81,24 @@ export async function createUser(data: any) {
     data,
   });
 }
+
+export async function updateUser(id: string | number, data: any) {
+  return request(`/api/users/${id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
+export async function deleteUser(id: string | number) {
+  return request(`/api/users/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+// Departments
+export async function getDepartments(params?: any) {
+  return request('/api/departments', {
+    method: 'GET',
+    params,
+  });
+}
