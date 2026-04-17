@@ -15,6 +15,13 @@ export async function createMaintenance(data: any) {
   });
 }
 
+export async function updateMaintenance(id: string | number, data: any) {
+  return request(`/api/maintenance/${id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
 // Maintenance Plans
 export async function getMaintenancePlans(params?: any) {
   return request('/api/maintenance-plans', {
@@ -26,6 +33,13 @@ export async function getMaintenancePlans(params?: any) {
 export async function createMaintenancePlan(data: any) {
   return request('/api/maintenance-plans', {
     method: 'POST',
+    data,
+  });
+}
+
+export async function updateMaintenancePlan(id: string | number, data: any) {
+  return request(`/api/maintenance-plans/${id}`, {
+    method: 'PUT',
     data,
   });
 }
@@ -95,10 +109,100 @@ export async function deleteUser(id: string | number) {
   });
 }
 
+/** 修改个人密码 PUT /api/users/me/password */
+export async function changePassword(data: API.ChangePasswordParams) {
+  return request('/api/users/me/password', {
+    method: 'PUT',
+    data,
+  });
+}
+
+/** 管理员重置密码 PUT /api/users/:id/reset-password */
+export async function resetPassword(id: string | number, data: { newPassword: string }) {
+  return request(`/api/users/${id}/reset-password`, {
+    method: 'PUT',
+    data,
+  });
+}
+
 // Departments
 export async function getDepartments(params?: any) {
   return request('/api/departments', {
     method: 'GET',
     params,
+  });
+}
+
+export async function createDepartment(data: any) {
+  return request('/api/departments', {
+    method: 'POST',
+    data,
+  });
+}
+
+export async function updateDepartment(id: string | number, data: any) {
+  return request(`/api/departments/${id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
+export async function deleteDepartment(id: string | number) {
+  return request(`/api/departments/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+// Roles
+export async function getRoles(params?: any) {
+  return request('/api/roles', {
+    method: 'GET',
+    params,
+  });
+}
+
+export async function createRole(data: any) {
+  return request('/api/roles', {
+    method: 'POST',
+    data,
+  });
+}
+
+export async function updateRole(id: string | number, data: any) {
+  return request(`/api/roles/${id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
+export async function deleteRole(id: string | number) {
+  return request(`/api/roles/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+// Backup & Restore
+export async function getBackups() {
+  return request('/api/backup', {
+    method: 'GET',
+  });
+}
+
+export async function createBackup() {
+  return request('/api/backup/create', {
+    method: 'POST',
+  });
+}
+
+export async function restoreBackup(fileName: string) {
+  return request('/api/backup/restore', {
+    method: 'POST',
+    data: { fileName },
+  });
+}
+
+export async function deleteBackup(fileName: string) {
+  return request(`/api/backup/${fileName}`, {
+    method: 'DELETE',
   });
 }

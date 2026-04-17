@@ -10,6 +10,7 @@ interface RepairRequestFormProps {
   onCancel: () => void;
   onSubmit: (values: any) => void;
   devices: any[];
+  users: any[];
 }
 
 const RepairRequestForm: React.FC<RepairRequestFormProps> = ({
@@ -17,9 +18,9 @@ const RepairRequestForm: React.FC<RepairRequestFormProps> = ({
   onCancel,
   onSubmit,
   devices,
+  users,
 }) => {
   const [form] = Form.useForm();
-
   const handleSubmit = () => {
     form.validateFields().then((values) => {
       onSubmit(values);
@@ -65,11 +66,13 @@ const RepairRequestForm: React.FC<RepairRequestFormProps> = ({
           rules={[{ required: true, message: '请选择设备' }]}
         >
           <Select placeholder="请选择设备">
-            {devices.map((device) => (
-              <Option key={device.id} value={device.id}>
-                {device.deviceCode} - {device.name}
-              </Option>
-            ))}
+            {devices
+              .filter((device) => device.status === 'normal')
+              .map((device) => (
+                <Option key={device.id} value={device.id}>
+                  {device.deviceCode} - {device.name}
+                </Option>
+              ))}
           </Select>
         </Form.Item>
         <Form.Item
@@ -77,7 +80,13 @@ const RepairRequestForm: React.FC<RepairRequestFormProps> = ({
           label="报修人"
           rules={[{ required: true, message: '请输入报修人' }]}
         >
-          <Input placeholder="请输入报修人" />
+          <Select placeholder="请选择报修人">
+            {users.map((user) => (
+              <Option key={user.id} value={user.name}>
+                {user.name} - {user.role}
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
         <Form.Item
           name="reportDate"

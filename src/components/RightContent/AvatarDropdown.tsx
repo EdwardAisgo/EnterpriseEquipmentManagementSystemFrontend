@@ -11,7 +11,7 @@ import { createStyles } from 'antd-style';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import ChangePasswordForm from '@/pages/system/components/ChangePasswordForm';
-import { outLogin } from '@/services/ant-design-pro/api';
+import { outLogin } from '@/services/auth/api';
 import { changePassword } from '@/services/business';
 import HeaderDropdown from '../HeaderDropdown';
 

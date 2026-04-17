@@ -28,9 +28,9 @@ export async function getMaintenanceCostReport(year: number | string) {
   });
 }
 
-/** 获取即将到期的设备质保 GET /api/report/warranty-expiring */
-export async function getWarrantyExpiringReport() {
-  return request('/api/report/warranty-expiring', {
+/** 获取即将到期的维护计划 GET /api/report/maintenance-expiring */
+export async function getMaintenanceExpiringReport() {
+  return request('/api/report/maintenance-expiring', {
     method: 'GET',
   });
 }

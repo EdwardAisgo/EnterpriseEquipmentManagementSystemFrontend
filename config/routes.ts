@@ -1,14 +1,6 @@
 /**
  * @name umi 的路由配置
  * @description 只支持 path,component,routes,redirect,wrappers,name,icon 的配置
- * @param path  path 只支持两种占位符配置，第一种是动态参数 :id 的形式，第二种是 * 通配符，通配符只能出现路由字符串的最后。
- * @param component 配置 location 和 path 匹配后用于渲染的 React 组件路径。可以是绝对路径，也可以是相对路径，如果是相对路径，会从 src/pages 开始找起。
- * @param routes 配置子路由，通常在需要为多个路径增加 layout 组件时使用。
- * @param redirect 配置路由跳转
- * @param wrappers 配置路由组件的包装组件，通过包装组件可以为当前的路由组件组合进更多的功能。 比如，可以用于路由级别的权限校验
- * @param name 配置路由的标题，默认读取国际化文件 menu.ts 中 menu.xxxx 的值，如配置 name 为 login，则读取 menu.ts 中 menu.login 的取值作为标题
- * @param icon 配置路由的图标，取值参考 https://ant.design/components/icon-cn， 注意去除风格后缀和大小写，如想要配置图标为 <StepBackwardOutlined /> 则取值应为 stepBackward 或 StepBackward，如想要配置图标为 <UserOutlined /> 则取值应为 user 或者 User
- * @doc https://umijs.org/docs/guides/routes
  */
 export default [
   {
@@ -26,13 +18,37 @@ export default [
     path: '/analytics',
     name: '数据统计',
     icon: 'barChart',
-    component: './analytics',
+    routes: [
+      {
+        path: '/analytics',
+        redirect: '/analytics/overview',
+        hideInMenu: true,
+      },
+      {
+        path: '/analytics/overview',
+        name: '统计概览',
+        icon: 'pieChart',
+        component: './analytics/Overview',
+      },
+    ],
   },
   {
     path: '/equipment',
     name: '设备台账',
     icon: 'tool',
-    component: './equipment',
+    routes: [
+      {
+        path: '/equipment',
+        redirect: '/equipment/list',
+        hideInMenu: true,
+      },
+      {
+        path: '/equipment/list',
+        name: '设备列表',
+        icon: 'unorderedList',
+        component: './equipment/List',
+      },
+    ],
   },
   {
     path: '/monitoring',
@@ -44,40 +60,94 @@ export default [
     path: '/maintenance',
     name: '维护保养',
     icon: 'build',
-    component: './maintenance',
+    routes: [
+      {
+        path: '/maintenance',
+        redirect: '/maintenance/plans',
+        hideInMenu: true,
+      },
+      {
+        path: '/maintenance/plans',
+        name: '维护计划',
+        icon: 'calendar',
+        component: './maintenance/Plans',
+      },
+      {
+        path: '/maintenance/records',
+        name: '保养记录',
+        icon: 'history',
+        component: './maintenance/Records',
+      },
+    ],
   },
   {
     path: '/repair',
     name: '故障维修',
     icon: 'warning',
-    component: './repair',
+    routes: [
+      {
+        path: '/repair',
+        redirect: '/repair/orders',
+        hideInMenu: true,
+      },
+      {
+        path: '/repair/orders',
+        name: '维修工单',
+        icon: 'fileText',
+        component: './repair/Orders',
+      },
+    ],
   },
   {
     path: '/system',
     name: '系统管理',
     icon: 'setting',
-    component: './system',
-  },
-  {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
     routes: [
       {
-        path: '/admin',
-        redirect: '/admin/sub-page',
+        path: '/system',
+        redirect: '/system/users',
+        hideInMenu: true,
       },
       {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        component: './Admin',
+        path: '/system/users',
+        name: '用户管理',
+        icon: 'user',
+        component: './system/Users',
+      },
+      {
+        path: '/system/departments',
+        name: '部门管理',
+        icon: 'team',
+        component: './system/Departments',
+      },
+      {
+        path: '/system/roles',
+        name: '角色管理',
+        icon: 'lock',
+        component: './system/Roles',
+      },
+      {
+        path: '/system/logs',
+        name: '日志管理',
+        icon: 'profile',
+        component: './system/logs',
+      },
+      {
+        path: '/system/backup',
+        name: '数据备份',
+        icon: 'database',
+        component: './system/Backup',
       },
     ],
   },
   {
     path: '/',
     redirect: '/analytics',
+  },
+  {
+    path: '/403',
+    layout: false,
+    component: './403',
   },
   {
     path: '*',

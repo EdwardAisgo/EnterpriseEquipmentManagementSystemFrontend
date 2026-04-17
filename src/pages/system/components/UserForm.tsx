@@ -1,5 +1,6 @@
 import { Button, Form, Input, Modal, Select } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getDepartments, getRoles } from '@/services/business';
 
 const { Option } = Select;
 
@@ -11,6 +12,7 @@ interface User {
   role: string;
   status: 'active' | 'inactive';
   createdAt: string;
+  departmentId?: number;
 }
 
 interface UserFormProps {
@@ -27,6 +29,31 @@ const UserForm: React.FC<UserFormProps> = ({
   user,
 }) => {
   const [form] = Form.useForm();
+  const [roles, setRoles] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await getRoles();
+        setRoles(res.roles || []);
+      } catch (error) {
+        console.error('Failed to fetch roles:', error);
+      }
+    };
+
+    const fetchDepartments = async () => {
+      try {
+        const res = await getDepartments();
+        setDepartments(res.departments || []);
+      } catch (error) {
+        console.error('Failed to fetch departments:', error);
+      }
+    };
+
+    fetchRoles();
+    fetchDepartments();
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -91,49 +118,38 @@ const UserForm: React.FC<UserFormProps> = ({
           rules={[{ required: true, message: '请选择角色' }]}
         >
           <Select placeholder="请选择角色">
-            <Option value="admin">管理员</Option>
-            <Option value="manager">经理</Option>
-            <Option value="staff">员工</Option>
+            {roles.map((role) => (
+              <Option key={role.id} value={role.id}>
+                {role.name}
+              </Option>
+            ))}
           </Select>
         </Form.Item>
         {!user && (
-          <>
-            <Form.Item
-              name="password"
-              label="密码"
-              rules={[
-                { required: true, message: '请输入密码' },
-                { min: 6, message: '密码至少 6 位' },
-              ]}
-            >
-              <Input.Password placeholder="请输入密码" />
-            </Form.Item>
-            <Form.Item
-              name="departmentId"
-              label="部门"
-              rules={[{ required: true, message: '请选择部门' }]}
-            >
-              <Select placeholder="请选择部门">
-                <Option value={1}>生产部</Option>
-                <Option value={2}>设备部</Option>
-                <Option value={3}>维修部</Option>
-                <Option value={4}>管理部</Option>
-              </Select>
-            </Form.Item>
-          </>
-        )}
-        {user && (
           <Form.Item
-            name="status"
-            label="状态"
-            rules={[{ required: true, message: '请选择状态' }]}
+            name="password"
+            label="密码"
+            rules={[
+              { required: true, message: '请输入密码' },
+              { min: 6, message: '密码至少 6 位' },
+            ]}
           >
-            <Select placeholder="请选择状态">
-              <Option value="active">活跃</Option>
-              <Option value="inactive">禁用</Option>
-            </Select>
+            <Input.Password placeholder="请输入密码" />
           </Form.Item>
         )}
+        <Form.Item
+          name="departmentId"
+          label="部门"
+          rules={[{ required: true, message: '请选择部门' }]}
+        >
+          <Select placeholder="请选择部门">
+            {departments.map((dept) => (
+              <Option key={dept.id} value={dept.id}>
+                {dept.name}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
       </Form>
     </Modal>
   );

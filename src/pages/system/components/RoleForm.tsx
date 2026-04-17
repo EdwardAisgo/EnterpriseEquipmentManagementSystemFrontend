@@ -1,38 +1,64 @@
-import { Button, Form, Input, Select, Modal } from 'antd';
-import React, { useEffect } from 'react';
+import { Button, Form, Input, Modal, Tree } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
 
-const { Option } = Select;
 const { TextArea } = Input;
 
-interface Role {
+type Role = {
   id: string;
   name: string;
   description: string;
   permissions: string[];
   createdAt: string;
-}
+};
 
-interface RoleFormProps {
+type RoleFormProps = {
   visible: boolean;
   onCancel: () => void;
   onSubmit: (values: any) => void;
   role: Role | null;
-}
+  menus: any[];
+};
 
-const RoleForm: React.FC<RoleFormProps> = ({ visible, onCancel, onSubmit, role }) => {
+const RoleForm: React.FC<RoleFormProps> = ({
+  visible,
+  onCancel,
+  onSubmit,
+  role,
+  menus,
+}) => {
   const [form] = Form.useForm();
+  const [checkedKeys, setCheckedKeys] = useState<React.Key[]>([]);
+
+  const treeData = useMemo(() => {
+    const toTree = (items: any[]): any[] =>
+      (items || [])
+        .filter((m) => m && !m.hideInMenu)
+        .map((m) => ({
+          title: m.name,
+          key: String(m.id),
+          children: toTree(m.children || []),
+        }));
+    return toTree(menus || []);
+  }, [menus]);
 
   useEffect(() => {
     if (role) {
-      form.setFieldsValue(role);
-    } else {
-      form.resetFields();
+      form.setFieldsValue({
+        name: role.name,
+        description: role.description,
+      });
+      setCheckedKeys(Array.isArray(role.permissions) ? role.permissions : []);
+      return;
     }
+    form.resetFields();
+    setCheckedKeys([]);
   }, [role, form]);
 
-  const handleSubmit = () => {
-    form.validateFields().then((values) => {
-      onSubmit(values);
+  const handleSubmit = async () => {
+    const values = await form.validateFields();
+    onSubmit({
+      ...values,
+      permissions: checkedKeys.map(String),
     });
   };
 
@@ -65,23 +91,18 @@ const RoleForm: React.FC<RoleFormProps> = ({ visible, onCancel, onSubmit, role }
         >
           <TextArea rows={3} placeholder="请输入角色描述" />
         </Form.Item>
-        <Form.Item
-          name="permissions"
-          label="权限"
-          rules={[{ required: true, message: '请选择权限' }]}
-        >
-          <Select
-            mode="multiple"
-            placeholder="请选择权限"
-            style={{ width: '100%' }}
-          >
-            <Option value="设备管理">设备管理</Option>
-            <Option value="运行监控">运行监控</Option>
-            <Option value="维护保养">维护保养</Option>
-            <Option value="故障维修">故障维修</Option>
-            <Option value="数据统计">数据统计</Option>
-            <Option value="系统管理">系统管理</Option>
-          </Select>
+        <Form.Item label="权限菜单" required>
+          <Tree
+            checkable
+            selectable={false}
+            defaultExpandAll
+            checkedKeys={checkedKeys}
+            onCheck={(keys) => {
+              const nextKeys = Array.isArray(keys) ? keys : keys.checked;
+              setCheckedKeys(nextKeys);
+            }}
+            treeData={treeData}
+          />
         </Form.Item>
       </Form>
     </Modal>

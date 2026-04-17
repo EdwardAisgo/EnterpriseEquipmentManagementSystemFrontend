@@ -7,6 +7,7 @@ import {
   Modal,
   Select,
 } from 'antd';
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { getUsers } from '@/services/business';
 
@@ -17,6 +18,8 @@ interface MaintenancePlanFormProps {
   onCancel: () => void;
   onSubmit: (values: any) => void;
   devices: any[];
+  values?: any;
+  isViewMode?: boolean;
 }
 
 const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({
@@ -24,9 +27,27 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({
   onCancel,
   onSubmit,
   devices,
+  values,
+  isViewMode = false,
 }) => {
   const [form] = Form.useForm();
   const [users, setUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (visible && values) {
+      form.setFieldsValue({
+        ...values,
+        lastMaintenance: values.lastMaintenance
+          ? dayjs(values.lastMaintenance)
+          : undefined,
+      });
+    } else if (visible && !values) {
+      form.resetFields();
+    }
+    if (!visible) {
+      form.resetFields();
+    }
+  }, [visible, values, form]);
 
   useEffect(() => {
     if (visible) {
@@ -66,17 +87,27 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({
 
   return (
     <Modal
-      title="新增维护计划"
+      title={
+        isViewMode ? '查看维护计划' : values ? '编辑维护计划' : '新增维护计划'
+      }
       open={visible}
       onCancel={onCancel}
-      footer={[
-        <Button key="cancel" onClick={onCancel}>
-          取消
-        </Button>,
-        <Button key="submit" type="primary" onClick={handleSubmit}>
-          确定
-        </Button>,
-      ]}
+      footer={
+        isViewMode
+          ? [
+              <Button key="close" onClick={onCancel}>
+                关闭
+              </Button>,
+            ]
+          : [
+              <Button key="cancel" onClick={onCancel}>
+                取消
+              </Button>,
+              <Button key="submit" type="primary" onClick={handleSubmit}>
+                {values ? '更新' : '确定'}
+              </Button>,
+            ]
+      }
     >
       <Form form={form} layout="vertical">
         <Form.Item
@@ -92,6 +123,7 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({
                 .toLowerCase()
                 .includes(input.toLowerCase())
             }
+            disabled={isViewMode}
           >
             {devices.map((device) => (
               <Option key={device.id} value={device.id}>
@@ -105,7 +137,7 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({
           label="维护类型"
           rules={[{ required: true, message: '请选择维护类型' }]}
         >
-          <Select placeholder="请选择维护类型">
+          <Select placeholder="请选择维护类型" disabled={isViewMode}>
             <Option value="preventive">预防性维护</Option>
             <Option value="corrective">纠正性维护</Option>
             <Option value="predictive">预测性维护</Option>
@@ -116,14 +148,18 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({
           label="维护周期"
           rules={[{ required: true, message: '请输入维护周期' }]}
         >
-          <InputNumber style={{ width: '100%' }} placeholder="请输入维护周期" />
+          <InputNumber
+            style={{ width: '100%' }}
+            placeholder="请输入维护周期"
+            disabled={isViewMode}
+          />
         </Form.Item>
         <Form.Item
           name="cycleUnit"
           label="周期单位"
           rules={[{ required: true, message: '请选择周期单位' }]}
         >
-          <Select placeholder="请选择周期单位">
+          <Select placeholder="请选择周期单位" disabled={isViewMode}>
             <Option value="day">天</Option>
             <Option value="week">周</Option>
             <Option value="month">月</Option>
@@ -135,7 +171,7 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({
           label="上次维护时间"
           rules={[{ required: true, message: '请选择上次维护时间' }]}
         >
-          <DatePicker style={{ width: '100%' }} />
+          <DatePicker style={{ width: '100%' }} disabled={isViewMode} />
         </Form.Item>
         <Form.Item
           name="responsiblePerson"
@@ -150,6 +186,7 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({
                 .toLowerCase()
                 .includes(input.toLowerCase())
             }
+            disabled={isViewMode}
           >
             {users.map((user) => (
               <Option key={user.id} value={user.name}>
