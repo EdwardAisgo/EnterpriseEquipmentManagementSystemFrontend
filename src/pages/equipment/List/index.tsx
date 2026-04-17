@@ -85,7 +85,10 @@ const EquipmentList: React.FC = () => {
       setVisible(false);
       fetchEquipmentList();
     } catch (error) {
-      message.error('添加失败');
+      const err: any = error;
+      const backendMessage =
+        err?.data?.message || err?.response?.data?.message || err?.message;
+      message.error(backendMessage || '添加失败');
     }
   };
 
@@ -97,7 +100,10 @@ const EquipmentList: React.FC = () => {
       setUpdateVisible(false);
       fetchEquipmentList();
     } catch (error) {
-      message.error('更新失败');
+      const err: any = error;
+      const backendMessage =
+        err?.data?.message || err?.response?.data?.message || err?.message;
+      message.error(backendMessage || '更新失败');
     }
   };
 
