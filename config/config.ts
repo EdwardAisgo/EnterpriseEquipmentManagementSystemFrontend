@@ -41,6 +41,10 @@ export default defineConfig({
   request: {},
   access: {},
   headScripts: [{ src: join('/', 'scripts/loading.js'), async: true }],
+  links: [
+    { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' },
+    { rel: 'alternate icon', href: '/favicon.ico' },
+  ],
   presets: ['umi-presets-pro'],
   mock: {
     include: ['mock/**/*', 'src/pages/**/_mock.ts'],

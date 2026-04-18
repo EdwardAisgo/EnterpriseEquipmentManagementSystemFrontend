@@ -80,7 +80,12 @@ const EquipmentList: React.FC = () => {
 
   const handleAdd = async (values: any) => {
     try {
-      await createDevice(values);
+      await createDevice({
+        ...values,
+        purchasePrice: values.purchasePrice
+          ? values.purchasePrice * 10000
+          : undefined,
+      });
       message.success('添加成功');
       setVisible(false);
       fetchEquipmentList();
@@ -95,7 +100,12 @@ const EquipmentList: React.FC = () => {
   const handleUpdate = async (values: any) => {
     if (!currentEquipment) return;
     try {
-      await updateDevice(currentEquipment.id, values);
+      await updateDevice(currentEquipment.id, {
+        ...values,
+        purchasePrice: values.purchasePrice
+          ? values.purchasePrice * 10000
+          : undefined,
+      });
       message.success('更新成功');
       setUpdateVisible(false);
       fetchEquipmentList();
@@ -149,8 +159,9 @@ const EquipmentList: React.FC = () => {
     },
     {
       title: '设备类型',
-      dataIndex: 'type',
-      key: 'type',
+      dataIndex: 'DeviceType',
+      key: 'deviceType',
+      render: (_, record: any) => record.DeviceType?.name ?? record.type,
     },
     {
       title: '采购时间',
@@ -158,10 +169,10 @@ const EquipmentList: React.FC = () => {
       key: 'purchaseDate',
     },
     {
-      title: '采购价格',
+      title: '采购价格（万元）',
       dataIndex: 'purchasePrice',
       key: 'purchasePrice',
-      valueType: 'money',
+      render: (value: number) => (value ? (value / 10000).toFixed(2) : '-'),
     },
     {
       title: '存放位置',

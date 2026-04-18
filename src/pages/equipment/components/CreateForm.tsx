@@ -7,7 +7,8 @@ import {
   Modal,
   Select,
 } from 'antd';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getDeviceTypes } from '@/services/equipment';
 
 const { Option } = Select;
 
@@ -23,10 +24,24 @@ const CreateForm: React.FC<CreateFormProps> = ({
   onSubmit,
 }) => {
   const [form] = Form.useForm();
+  const [deviceTypes, setDeviceTypes] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (visible) {
+      getDeviceTypes().then((res) => {
+        setDeviceTypes(res.deviceTypes || []);
+      });
+    }
+  }, [visible]);
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
-      onSubmit(values);
+      onSubmit({
+        ...values,
+        purchasePrice: values.purchasePrice
+          ? values.purchasePrice * 10000
+          : undefined,
+      });
       form.resetFields();
     });
   };
@@ -61,16 +76,16 @@ const CreateForm: React.FC<CreateFormProps> = ({
           <Input placeholder="请输入设备名称" />
         </Form.Item>
         <Form.Item
-          name="type"
+          name="deviceTypeId"
           label="设备类型"
           rules={[{ required: true, message: '请选择设备类型' }]}
         >
           <Select placeholder="请选择设备类型">
-            <Option value="生产设备">生产设备</Option>
-            <Option value="包装设备">包装设备</Option>
-            <Option value="加工设备">加工设备</Option>
-            <Option value="检测设备">检测设备</Option>
-            <Option value="其他设备">其他设备</Option>
+            {deviceTypes.map((dt) => (
+              <Option key={dt.id} value={dt.id}>
+                {dt.name}
+              </Option>
+            ))}
           </Select>
         </Form.Item>
         <Form.Item
@@ -89,10 +104,13 @@ const CreateForm: React.FC<CreateFormProps> = ({
         </Form.Item>
         <Form.Item
           name="purchasePrice"
-          label="采购价格"
+          label="采购价格（万元）"
           rules={[{ required: true, message: '请输入采购价格' }]}
         >
-          <InputNumber style={{ width: '100%' }} placeholder="请输入采购价格" />
+          <InputNumber
+            style={{ width: '100%' }}
+            placeholder="请输入采购价格（万元）"
+          />
         </Form.Item>
         <Form.Item
           name="location"

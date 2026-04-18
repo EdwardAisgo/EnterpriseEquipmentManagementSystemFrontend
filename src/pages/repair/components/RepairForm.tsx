@@ -27,12 +27,20 @@ interface RepairFormProps {
   order: RepairOrder | null;
 }
 
-const RepairForm: React.FC<RepairFormProps> = ({ visible, onCancel, onSubmit, order }) => {
+const RepairForm: React.FC<RepairFormProps> = ({
+  visible,
+  onCancel,
+  onSubmit,
+  order,
+}) => {
   const [form] = Form.useForm();
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
-      onSubmit(values);
+      onSubmit({
+        ...values,
+        repairCost: values.repairCost ? values.repairCost * 10000 : undefined,
+      });
     });
   };
 
@@ -58,23 +66,20 @@ const RepairForm: React.FC<RepairFormProps> = ({ visible, onCancel, onSubmit, or
         >
           <TextArea rows={4} placeholder="请详细描述维修内容" />
         </Form.Item>
-        <Form.Item
-          name="partsReplaced"
-          label="更换的备件"
-        >
+        <Form.Item name="partsReplaced" label="更换的备件">
           <Input placeholder="请输入更换的备件" />
         </Form.Item>
         <Form.Item
           name="repairCost"
-          label="维修费用"
+          label="维修费用（万元）"
           rules={[{ required: true, message: '请输入维修费用' }]}
         >
-          <InputNumber style={{ width: '100%' }} placeholder="请输入维修费用" />
+          <InputNumber
+            style={{ width: '100%' }}
+            placeholder="请输入维修费用（万元）"
+          />
         </Form.Item>
-        <Form.Item
-          name="notes"
-          label="备注"
-        >
+        <Form.Item name="notes" label="备注">
           <TextArea rows={3} placeholder="请输入备注" />
         </Form.Item>
       </Form>

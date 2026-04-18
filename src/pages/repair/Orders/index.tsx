@@ -95,6 +95,7 @@ const RepairOrders: React.FC = () => {
       await updateRepairOrder(currentOrder.id, {
         ...values,
         status: 'completed',
+        repairCost: values.repairCost ? values.repairCost * 10000 : undefined,
       });
       message.success('维修记录已保存');
       setRepairVisible(false);
@@ -152,6 +153,12 @@ const RepairOrders: React.FC = () => {
       title: '维修人',
       dataIndex: 'assignedTo',
       key: 'assignedTo',
+    },
+    {
+      title: '维修费用（万元）',
+      dataIndex: 'repairCost',
+      key: 'repairCost',
+      render: (value: number) => (value ? (value / 10000).toFixed(2) : '-'),
     },
     {
       title: '操作',

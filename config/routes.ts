@@ -48,6 +48,12 @@ export default [
         icon: 'unorderedList',
         component: './equipment/List',
       },
+      {
+        path: '/equipment/device-types',
+        name: '设备类型',
+        icon: 'tags',
+        component: './equipment/DeviceTypes',
+      },
     ],
   },
   {

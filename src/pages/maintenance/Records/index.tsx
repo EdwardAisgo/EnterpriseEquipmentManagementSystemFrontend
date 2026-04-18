@@ -68,7 +68,10 @@ const RecordManagement: React.FC = () => {
 
   const handleAddRecord = async (values: any) => {
     try {
-      await createMaintenance(values);
+      await createMaintenance({
+        ...values,
+        cost: values.cost ? values.cost * 10000 : undefined,
+      });
       message.success('维护记录添加成功');
       setRecordVisible(false);
       fetchRecords();
@@ -79,7 +82,10 @@ const RecordManagement: React.FC = () => {
 
   const handleUpdateRecord = async (values: any) => {
     try {
-      await updateMaintenance(recordId, values);
+      await updateMaintenance(recordId, {
+        ...values,
+        cost: values.cost ? values.cost * 10000 : undefined,
+      });
       message.success('维护记录更新成功');
       setRecordVisible(false);
       fetchRecords();
@@ -129,10 +135,10 @@ const RecordManagement: React.FC = () => {
       key: 'technician',
     },
     {
-      title: '维护费用',
+      title: '维护费用（万元）',
       dataIndex: 'cost',
       key: 'cost',
-      valueType: 'money',
+      render: (value: number) => (value ? (value / 10000).toFixed(2) : '-'),
     },
     {
       title: '备注',

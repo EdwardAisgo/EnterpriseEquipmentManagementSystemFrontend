@@ -39,6 +39,7 @@ const MaintenanceRecordForm: React.FC<MaintenanceRecordFormProps> = ({
       form.setFieldsValue({
         ...values,
         startDate: values.startDate ? dayjs(values.startDate) : undefined,
+        cost: values.cost ? values.cost / 10000 : undefined,
       });
     } else if (visible && !values) {
       form.resetFields();
@@ -58,7 +59,10 @@ const MaintenanceRecordForm: React.FC<MaintenanceRecordFormProps> = ({
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
-      onSubmit(values);
+      onSubmit({
+        ...values,
+        cost: values.cost ? values.cost * 10000 : undefined,
+      });
     });
   };
 
@@ -163,12 +167,12 @@ const MaintenanceRecordForm: React.FC<MaintenanceRecordFormProps> = ({
         </Form.Item>
         <Form.Item
           name="cost"
-          label="维护费用"
+          label="维护费用（万元）"
           rules={[{ required: true, message: '请输入维护费用' }]}
         >
           <InputNumber
             style={{ width: '100%' }}
-            placeholder="请输入维护费用"
+            placeholder="请输入维护费用（万元）"
             disabled={isViewMode}
           />
         </Form.Item>

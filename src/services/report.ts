@@ -34,3 +34,10 @@ export async function getMaintenanceExpiringReport() {
     method: 'GET',
   });
 }
+
+/** 获取监控面板统计数据 GET /api/report/monitoring-stats */
+export async function getMonitoringStats() {
+  return request('/api/report/monitoring-stats', {
+    method: 'GET',
+  });
+}

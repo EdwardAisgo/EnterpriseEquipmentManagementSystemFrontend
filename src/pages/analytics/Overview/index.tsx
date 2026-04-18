@@ -65,7 +65,7 @@ const AnalyticsOverview: React.FC = () => {
         const months = Array.from({ length: 12 }, (_, i) => `${i + 1}月`);
         const costs = Array(12).fill(0);
         costRes.monthlyCosts.forEach((item: any) => {
-          costs[item.month - 1] = parseFloat(item.totalCost);
+          costs[item.month - 1] = parseFloat(item.totalCost) / 10000;
         });
         costChartInstance.current.setOption({
           xAxis: { data: months },
@@ -156,7 +156,7 @@ const AnalyticsOverview: React.FC = () => {
         title: { text: '月度维护成本趋势', left: 'center' },
         tooltip: { trigger: 'axis' },
         xAxis: { type: 'category', data: [] },
-        yAxis: { type: 'value', name: '金额 (元)' },
+        yAxis: { type: 'value', name: '金额（万元）' },
         series: [
           {
             name: '维护成本',

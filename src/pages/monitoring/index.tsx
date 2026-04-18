@@ -1,8 +1,8 @@
 import {
-  DashboardOutlined,
   HourglassOutlined,
+  PlayCircleOutlined,
   PlusOutlined,
-  ThunderboltOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
@@ -10,6 +10,7 @@ import { Button, Card, Col, message, Row, Statistic } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { createRunningData, getRunningData } from '@/services/business';
 import { getDevices } from '@/services/equipment';
+import { getMonitoringStats } from '@/services/report';
 import RunningDataForm from './components/RunningDataForm';
 
 const Monitoring: React.FC = () => {
@@ -17,6 +18,8 @@ const Monitoring: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [runningData, setRunningData] = useState<any[]>([]);
   const [devices, setDevices] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>(null);
+  const [statsLoading, setStatsLoading] = useState(false);
 
   const fetchDevices = async () => {
     try {
@@ -39,9 +42,22 @@ const Monitoring: React.FC = () => {
     }
   };
 
+  const fetchStats = async () => {
+    setStatsLoading(true);
+    try {
+      const res = await getMonitoringStats();
+      setStats(res.stats || null);
+    } catch (_error) {
+      message.error('获取监控统计数据失败');
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchDevices();
     fetchRunningData();
+    fetchStats();
   }, []);
 
   const handleAdd = async (values: any) => {
@@ -98,10 +114,24 @@ const Monitoring: React.FC = () => {
     <Card>
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col span={8}>
-          <Card bordered={false}>
+          <Card bordered={false} loading={statsLoading}>
+            <Statistic
+              title="设备完好率"
+              value={
+                stats && stats.totalDevices > 0
+                  ? Math.round((stats.normalCount / stats.totalDevices) * 100)
+                  : 0
+              }
+              prefix={<PlayCircleOutlined />}
+              suffix="%"
+            />
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card bordered={false} loading={statsLoading}>
             <Statistic
               title="今日总运行时长"
-              value={128.5}
+              value={stats?.todayRunningHours ?? 0}
               precision={1}
               prefix={<HourglassOutlined />}
               suffix="h"
@@ -109,23 +139,12 @@ const Monitoring: React.FC = () => {
           </Card>
         </Col>
         <Col span={8}>
-          <Card bordered={false}>
+          <Card bordered={false} loading={statsLoading}>
             <Statistic
-              title="今日总产量"
-              value={15420}
-              prefix={<DashboardOutlined />}
-              suffix="pcs"
-            />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card bordered={false}>
-            <Statistic
-              title="今日总能耗"
-              value={856.2}
-              precision={1}
-              prefix={<ThunderboltOutlined />}
-              suffix="kWh"
+              title="故障待修设备数"
+              value={stats?.pendingRepairCount ?? 0}
+              prefix={<WarningOutlined />}
+              suffix="台"
             />
           </Card>
         </Col>

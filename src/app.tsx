@@ -12,6 +12,7 @@ import {
   ProfileOutlined,
   SettingOutlined,
   SmileOutlined,
+  TagsOutlined,
   TeamOutlined,
   ToolOutlined,
   UnorderedListOutlined,
@@ -51,6 +52,7 @@ const ICON_MAP: Record<string, ReactNode> = {
   database: <DatabaseOutlined />,
   crown: <CrownOutlined />,
   smile: <SmileOutlined />,
+  tags: <TagsOutlined />,
 };
 
 const withIconLabel = (label: ReactNode, icon?: ReactNode) => {
@@ -233,6 +235,7 @@ export const layout: RunTimeLayoutConfig = ({
       },
     ],
     menuHeaderRender: undefined,
+    logo: '/logo.svg',
     breadcrumbRender: (routers) => routers,
     itemRender: (route: any, _params: any, routes: any[]) => {
       const isLast = routes.indexOf(route) === routes.length - 1;

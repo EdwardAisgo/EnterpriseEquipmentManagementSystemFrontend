@@ -10,6 +10,7 @@ import {
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { getDepartments } from '@/services/business';
+import { getDeviceTypes } from '@/services/equipment';
 
 const { Option } = Select;
 
@@ -18,6 +19,7 @@ interface Equipment {
   deviceCode: string;
   name: string;
   type: string;
+  deviceTypeId?: number;
   model: string;
   departmentId?: number;
   purchaseDate: string;
@@ -45,11 +47,15 @@ const UpdateForm: React.FC<UpdateFormProps> = ({
 }) => {
   const [form] = Form.useForm();
   const [departments, setDepartments] = useState<any[]>([]);
+  const [deviceTypes, setDeviceTypes] = useState<any[]>([]);
 
   useEffect(() => {
     if (visible) {
       getDepartments().then((res) => {
         setDepartments(res.departments || []);
+      });
+      getDeviceTypes().then((res) => {
+        setDeviceTypes(res.deviceTypes || []);
       });
     }
   }, [visible]);
@@ -58,7 +64,11 @@ const UpdateForm: React.FC<UpdateFormProps> = ({
     if (visible && values) {
       form.setFieldsValue({
         ...values,
+        deviceTypeId: values.deviceTypeId,
         purchaseDate: values.purchaseDate ? dayjs(values.purchaseDate) : null,
+        purchasePrice: values.purchasePrice
+          ? values.purchasePrice / 10000
+          : undefined,
       });
     } else {
       form.resetFields();
@@ -114,16 +124,16 @@ const UpdateForm: React.FC<UpdateFormProps> = ({
           </Select>
         </Form.Item>
         <Form.Item
-          name="type"
+          name="deviceTypeId"
           label="设备类型"
           rules={[{ required: true, message: '请选择设备类型' }]}
         >
           <Select placeholder="请选择设备类型">
-            <Option value="生产设备">生产设备</Option>
-            <Option value="包装设备">包装设备</Option>
-            <Option value="加工设备">加工设备</Option>
-            <Option value="检测设备">检测设备</Option>
-            <Option value="其他设备">其他设备</Option>
+            {deviceTypes.map((dt) => (
+              <Option key={dt.id} value={dt.id}>
+                {dt.name}
+              </Option>
+            ))}
           </Select>
         </Form.Item>
         <Form.Item
@@ -142,10 +152,13 @@ const UpdateForm: React.FC<UpdateFormProps> = ({
         </Form.Item>
         <Form.Item
           name="purchasePrice"
-          label="采购价格"
+          label="采购价格（万元）"
           rules={[{ required: true, message: '请输入采购价格' }]}
         >
-          <InputNumber style={{ width: '100%' }} placeholder="请输入采购价格" />
+          <InputNumber
+            style={{ width: '100%' }}
+            placeholder="请输入采购价格（万元）"
+          />
         </Form.Item>
         <Form.Item
           name="location"
