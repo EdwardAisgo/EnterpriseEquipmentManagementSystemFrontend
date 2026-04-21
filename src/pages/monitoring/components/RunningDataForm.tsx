@@ -9,6 +9,7 @@ import {
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getUsers } from '@/services/business';
+import styles from './RunningDataForm.less';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -85,7 +86,7 @@ const RunningDataForm: React.FC<RunningDataFormProps> = ({
           label="日期"
           rules={[{ required: true, message: '请选择日期' }]}
         >
-          <DatePicker style={{ width: '100%' }} showTime />
+          <DatePicker className={styles.fullWidth} showTime />
         </Form.Item>
         <Form.Item
           name="runningHours"
@@ -93,7 +94,7 @@ const RunningDataForm: React.FC<RunningDataFormProps> = ({
           rules={[{ required: true, message: '请输入运行时长' }]}
         >
           <InputNumber
-            style={{ width: '100%' }}
+            className={styles.fullWidth}
             placeholder="请输入运行时长（小时）"
           />
         </Form.Item>
@@ -102,14 +103,14 @@ const RunningDataForm: React.FC<RunningDataFormProps> = ({
           label="产量"
           rules={[{ required: true, message: '请输入产量' }]}
         >
-          <InputNumber style={{ width: '100%' }} placeholder="请输入产量" />
+          <InputNumber className={styles.fullWidth} placeholder="请输入产量" />
         </Form.Item>
         <Form.Item
           name="energyConsumption"
           label="能耗"
           rules={[{ required: true, message: '请输入能耗' }]}
         >
-          <InputNumber style={{ width: '100%' }} placeholder="请输入能耗" />
+          <InputNumber className={styles.fullWidth} placeholder="请输入能耗" />
         </Form.Item>
         <Form.Item
           name="operator"

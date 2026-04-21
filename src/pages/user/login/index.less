@@ -1,0 +1,187 @@
+.bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 50%, #001529 100%);
+  z-index: 0;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.leftPanel {
+  flex: 1 1 55%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  z-index: 1;
+}
+
+.rightPanel {
+  flex: 1 1 45%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 48px;
+  z-index: 1;
+  overflow: hidden;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+.circle1 {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  top: 10%;
+  left: 10%;
+  animation: float 6s ease-in-out infinite;
+  z-index: 0;
+}
+
+.circle2 {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  top: 20%;
+  right: 15%;
+  animation: floatSlow 8s ease-in-out infinite;
+  z-index: 0;
+}
+
+.circle3 {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  bottom: 10%;
+  left: 15%;
+  animation: float 10s ease-in-out infinite;
+  z-index: 0;
+}
+
+.circle4 {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  bottom: 25%;
+  right: 10%;
+  animation: pulse 4s ease-in-out infinite;
+  z-index: 0;
+}
+
+.line1 {
+  position: absolute;
+  width: 300px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  top: 35%;
+  left: 5%;
+  animation: floatSlow 12s ease-in-out infinite;
+  z-index: 0;
+}
+
+.line2 {
+  position: absolute;
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  bottom: 35%;
+  right: 8%;
+  animation: float 9s ease-in-out infinite;
+  z-index: 0;
+}
+
+.brandContent {
+  z-index: 2;
+  text-align: center;
+  padding: 0 40px;
+}
+
+.logoImg {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 24px;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2));
+}
+
+.brandTitle {
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.brandSubtitle {
+  font-size: 16px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.formCard {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 32px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+
+.formWrapper {
+  width: 100%;
+  overflow: hidden;
+}
+
+.alertMargin {
+  margin-bottom: 24px;
+}
+
+.autoLoginRow {
+  margin-bottom: 24px;
+}
+
+.forgotPassword {
+  float: right;
+}
+
+@media (max-width: 768px) {
+  .leftPanel {
+    display: none;
+  }
+  .rightPanel {
+    flex: 1 1 100%;
+  }
+}

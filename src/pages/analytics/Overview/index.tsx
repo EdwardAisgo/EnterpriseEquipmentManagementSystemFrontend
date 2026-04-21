@@ -19,6 +19,7 @@ import {
   getMaintenanceExpiringReport,
   getMaintenanceTypeReport,
 } from '@/services/report';
+import styles from './index.less';
 
 const AnalyticsOverview: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -140,7 +141,11 @@ const AnalyticsOverview: React.FC = () => {
         const days = dayjs(record.nextMaintenance).diff(dayjs(), 'day');
         return (
           <span
-            style={{ color: days <= 7 ? 'red' : 'orange', fontWeight: 'bold' }}
+            className={
+              days <= 7
+                ? styles.remainingDaysDanger
+                : styles.remainingDaysWarning
+            }
           >
             {days} 天
           </span>
@@ -207,7 +212,11 @@ const AnalyticsOverview: React.FC = () => {
 
   return (
     <PageContainer>
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Space
+        direction="vertical"
+        size="large"
+        className={styles.spaceFullWidth}
+      >
         <Card>
           <Space>
             <span>选择年份：</span>
@@ -223,17 +232,17 @@ const AnalyticsOverview: React.FC = () => {
           <Row gutter={[16, 16]}>
             <Col span={24}>
               <Card>
-                <div ref={costChartRef} style={{ height: '400px' }} />
+                <div ref={costChartRef} className={styles.chartContainer} />
               </Card>
             </Col>
             <Col span={12}>
               <Card>
-                <div ref={statusChartRef} style={{ height: '400px' }} />
+                <div ref={statusChartRef} className={styles.chartContainer} />
               </Card>
             </Col>
             <Col span={12}>
               <Card>
-                <div ref={typeChartRef} style={{ height: '400px' }} />
+                <div ref={typeChartRef} className={styles.chartContainer} />
               </Card>
             </Col>
             <Col span={24}>

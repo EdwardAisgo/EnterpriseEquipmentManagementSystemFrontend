@@ -2,6 +2,7 @@ import { HeartTwoTone, SmileTwoTone } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Alert, Card, Typography } from 'antd';
 import React from 'react';
+import styles from './Admin.less';
 
 const Admin: React.FC = () => {
   return (
@@ -12,17 +13,14 @@ const Admin: React.FC = () => {
           type="success"
           showIcon
           banner
-          style={{
-            margin: -12,
-            marginBottom: 48,
-          }}
+          className={styles.alertBanner}
         />
-        <Typography.Title level={2} style={{ textAlign: 'center' }}>
+        <Typography.Title level={2} className={styles.centerTitle}>
           <SmileTwoTone /> Ant Design Pro{' '}
           <HeartTwoTone twoToneColor="#eb2f96" /> You
         </Typography.Title>
       </Card>
-      <p style={{ textAlign: 'center', marginTop: 24 }}>
+      <p className={styles.centerText}>
         想添加更多页面？请参考{' '}
         <a
           href="https://pro.ant.design/docs/block-cn"

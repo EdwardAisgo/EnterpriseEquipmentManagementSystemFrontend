@@ -18,6 +18,7 @@ import {
 import CreateForm from '../components/CreateForm';
 import ScrapForm from '../components/ScrapForm';
 import UpdateForm from '../components/UpdateForm';
+import styles from './index.less';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -238,23 +239,17 @@ const EquipmentList: React.FC = () => {
   return (
     <PageContainer>
       <Card>
-        <div
-          style={{
-            marginBottom: 16,
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}
-        >
+        <div className={styles.toolbar}>
           <Space>
             <Search
               placeholder="搜索设备名称/编号"
-              style={{ width: 300 }}
+              className={styles.searchInput}
               onChange={(e) => setSearch(e.target.value)}
               onSearch={handleSearch}
             />
             <Select
               defaultValue="all"
-              style={{ width: 120 }}
+              className={styles.statusSelect}
               onChange={handleStatusChange}
             >
               <Option value="all">所有状态</Option>

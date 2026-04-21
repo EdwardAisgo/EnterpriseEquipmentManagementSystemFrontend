@@ -1,7 +1,8 @@
 import { Skeleton } from 'antd';
+import styles from './loading.less';
 
 const Loading: React.FC = () => (
-  <Skeleton style={{ margin: '24px 40px', height: '60vh' }} active />
+  <Skeleton className={styles.loadingSkeleton} active />
 );
 
 export default Loading;

@@ -1,13 +1,12 @@
 import { GithubOutlined } from '@ant-design/icons';
 import { DefaultFooter } from '@ant-design/pro-components';
 import React from 'react';
+import styles from './index.less';
 
 const Footer: React.FC = () => {
   return (
     <DefaultFooter
-      style={{
-        background: 'none',
-      }}
+      className={styles.footer}
       copyright="Powered by XuXing"
       links={[
         {

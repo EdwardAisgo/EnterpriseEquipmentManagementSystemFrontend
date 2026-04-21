@@ -9,6 +9,7 @@ import {
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getDeviceTypes } from '@/services/equipment';
+import styles from './CreateForm.less';
 
 const { Option } = Select;
 
@@ -100,7 +101,7 @@ const CreateForm: React.FC<CreateFormProps> = ({
           label="采购时间"
           rules={[{ required: true, message: '请选择采购时间' }]}
         >
-          <DatePicker style={{ width: '100%' }} />
+          <DatePicker className={styles.fullWidth} />
         </Form.Item>
         <Form.Item
           name="purchasePrice"
@@ -108,7 +109,7 @@ const CreateForm: React.FC<CreateFormProps> = ({
           rules={[{ required: true, message: '请输入采购价格' }]}
         >
           <InputNumber
-            style={{ width: '100%' }}
+            className={styles.fullWidth}
             placeholder="请输入采购价格（万元）"
           />
         </Form.Item>

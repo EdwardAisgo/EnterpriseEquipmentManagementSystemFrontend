@@ -10,6 +10,7 @@ import {
 } from '@/services/business';
 import { getDevices } from '@/services/equipment';
 import MaintenancePlanForm from '../components/MaintenancePlanForm';
+import styles from './index.less';
 
 type MaintenancePlan = {
   id: string;
@@ -140,7 +141,11 @@ const PlanManagement: React.FC = () => {
         <div>
           <span>{text}</span>
           {record.alert && (
-            <Badge status="error" text="需要维护" style={{ marginLeft: 8 }} />
+            <Badge
+              status="error"
+              text="需要维护"
+              className={styles.alertBadge}
+            />
           )}
         </div>
       ),

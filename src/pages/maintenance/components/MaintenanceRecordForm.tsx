@@ -10,6 +10,7 @@ import {
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { getUsers } from '@/services/business';
+import styles from './MaintenanceRecordForm.less';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -118,7 +119,7 @@ const MaintenanceRecordForm: React.FC<MaintenanceRecordFormProps> = ({
           label="维护日期"
           rules={[{ required: true, message: '请选择维护日期' }]}
         >
-          <DatePicker style={{ width: '100%' }} disabled={isViewMode} />
+          <DatePicker className={styles.fullWidth} disabled={isViewMode} />
         </Form.Item>
         <Form.Item
           name="maintenanceType"
@@ -171,7 +172,7 @@ const MaintenanceRecordForm: React.FC<MaintenanceRecordFormProps> = ({
           rules={[{ required: true, message: '请输入维护费用' }]}
         >
           <InputNumber
-            style={{ width: '100%' }}
+            className={styles.fullWidth}
             placeholder="请输入维护费用（万元）"
             disabled={isViewMode}
           />

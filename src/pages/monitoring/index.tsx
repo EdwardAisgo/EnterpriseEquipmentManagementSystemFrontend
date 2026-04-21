@@ -12,6 +12,7 @@ import { createRunningData, getRunningData } from '@/services/business';
 import { getDevices } from '@/services/equipment';
 import { getMonitoringStats } from '@/services/report';
 import RunningDataForm from './components/RunningDataForm';
+import styles from './index.less';
 
 const Monitoring: React.FC = () => {
   const [visible, setVisible] = useState(false);
@@ -112,7 +113,7 @@ const Monitoring: React.FC = () => {
 
   return (
     <Card>
-      <Row gutter={16} style={{ marginBottom: 24 }}>
+      <Row gutter={16} className={styles.statsRow}>
         <Col span={8}>
           <Card bordered={false} loading={statsLoading}>
             <Statistic
@@ -150,13 +151,7 @@ const Monitoring: React.FC = () => {
         </Col>
       </Row>
 
-      <div
-        style={{
-          marginBottom: 16,
-          display: 'flex',
-          justifyContent: 'flex-end',
-        }}
-      >
+      <div className={styles.toolbar}>
         <Button
           type="primary"
           icon={<PlusOutlined />}

@@ -3,6 +3,7 @@ import { PageContainer, ProTable } from '@ant-design/pro-components';
 import { Card, Tooltip, Typography } from 'antd';
 import React from 'react';
 import { getLogs, type OperationLog } from '@/services/log';
+import styles from './index.less';
 
 const LogManagement: React.FC = () => {
   const buildTargetText = (record: OperationLog) => {
@@ -58,16 +59,9 @@ const LogManagement: React.FC = () => {
         return (
           <Tooltip
             placement="topLeft"
-            title={
-              <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
-                {detailText}
-              </pre>
-            }
+            title={<pre className={styles.preWrap}>{detailText}</pre>}
           >
-            <Typography.Text
-              ellipsis
-              style={{ maxWidth: 500, display: 'inline-block' }}
-            >
+            <Typography.Text ellipsis className={styles.detailText}>
               {detailText}
             </Typography.Text>
           </Tooltip>

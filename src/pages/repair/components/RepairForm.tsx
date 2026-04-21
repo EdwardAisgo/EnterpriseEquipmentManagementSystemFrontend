@@ -1,5 +1,6 @@
 import { Button, Form, Input, InputNumber, Modal } from 'antd';
 import React from 'react';
+import styles from './RepairForm.less';
 
 const { TextArea } = Input;
 
@@ -75,7 +76,7 @@ const RepairForm: React.FC<RepairFormProps> = ({
           rules={[{ required: true, message: '请输入维修费用' }]}
         >
           <InputNumber
-            style={{ width: '100%' }}
+            className={styles.fullWidth}
             placeholder="请输入维修费用（万元）"
           />
         </Form.Item>

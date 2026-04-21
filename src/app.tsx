@@ -30,6 +30,7 @@ import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 import '@ant-design/v5-patch-for-react-19';
 import type { RequestConfig } from '@umijs/max';
+import styles from './app.less';
 
 const loginPath = '/user/login';
 
@@ -60,7 +61,7 @@ const withIconLabel = (label: ReactNode, icon?: ReactNode) => {
   return (
     <span>
       {icon}
-      <span style={{ marginLeft: 8 }}>{label}</span>
+      <span className={styles.iconLabel}>{label}</span>
     </span>
   );
 };

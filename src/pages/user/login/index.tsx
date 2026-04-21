@@ -6,195 +6,18 @@ import {
 } from '@ant-design/pro-components';
 import { Helmet, useModel } from '@umijs/max';
 import { Alert, App, Tabs } from 'antd';
-import { createStyles } from 'antd-style';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import { login } from '@/services/auth/api';
 import Settings from '../../../../config/defaultSettings';
-
-const useStyles = createStyles(({ token }) => {
-  return {
-    bg: {
-      position: 'absolute',
-      inset: 0,
-      background:
-        'linear-gradient(135deg, #1890ff 0%, #096dd9 50%, #001529 100%)',
-      zIndex: 0,
-    },
-    container: {
-      display: 'flex',
-      height: '100vh',
-      position: 'relative',
-      overflow: 'hidden',
-    },
-    leftPanel: {
-      flex: '1 1 55%',
-      position: 'relative',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      color: '#fff',
-      zIndex: 1,
-    },
-    rightPanel: {
-      flex: '1 1 45%',
-      position: 'relative',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '24px 48px',
-      zIndex: 1,
-      overflow: 'hidden',
-    },
-    '@keyframes float': {
-      '0%, 100%': { transform: 'translateY(0)' },
-      '50%': { transform: 'translateY(-20px)' },
-    },
-    '@keyframes floatSlow': {
-      '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
-      '50%': { transform: 'translateY(-10px) rotate(5deg)' },
-    },
-    '@keyframes pulse': {
-      '0%, 100%': { opacity: 0.3, transform: 'scale(1)' },
-      '50%': { opacity: 0.6, transform: 'scale(1.2)' },
-    },
-    circle1: {
-      position: 'absolute',
-      width: 120,
-      height: 120,
-      borderRadius: '50%',
-      background: 'rgba(255,255,255,0.08)',
-      top: '10%',
-      left: '10%',
-      animation: 'float 6s ease-in-out infinite',
-      zIndex: 0,
-    },
-    circle2: {
-      position: 'absolute',
-      width: 80,
-      height: 80,
-      borderRadius: '50%',
-      background: 'rgba(255,255,255,0.06)',
-      top: '20%',
-      right: '15%',
-      animation: 'floatSlow 8s ease-in-out infinite',
-      zIndex: 0,
-    },
-    circle3: {
-      position: 'absolute',
-      width: 160,
-      height: 160,
-      borderRadius: '50%',
-      background: 'rgba(255,255,255,0.05)',
-      bottom: '10%',
-      left: '15%',
-      animation: 'float 10s ease-in-out infinite',
-      zIndex: 0,
-    },
-    circle4: {
-      position: 'absolute',
-      width: 60,
-      height: 60,
-      borderRadius: '50%',
-      background: 'rgba(255,255,255,0.1)',
-      bottom: '25%',
-      right: '10%',
-      animation: 'pulse 4s ease-in-out infinite',
-      zIndex: 0,
-    },
-    line1: {
-      position: 'absolute',
-      width: 300,
-      height: 2,
-      background:
-        'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
-      top: '35%',
-      left: '5%',
-      animation: 'floatSlow 12s ease-in-out infinite',
-      zIndex: 0,
-    },
-    line2: {
-      position: 'absolute',
-      width: 200,
-      height: 2,
-      background:
-        'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
-      bottom: '35%',
-      right: '8%',
-      animation: 'float 9s ease-in-out infinite',
-      zIndex: 0,
-    },
-    brandContent: {
-      zIndex: 2,
-      textAlign: 'center',
-      padding: '0 40px',
-    },
-    logoImg: {
-      width: 120,
-      height: 120,
-      marginBottom: 24,
-      filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.2))',
-    },
-    brandTitle: {
-      fontSize: 36,
-      fontWeight: 700,
-      color: '#fff',
-      marginBottom: 16,
-      letterSpacing: 2,
-      textShadow: '0 4px 12px rgba(0,0,0,0.3)',
-    },
-    brandSubtitle: {
-      fontSize: 16,
-      color: 'rgba(255,255,255,0.75)',
-      lineHeight: 1.6,
-      maxWidth: 400,
-      margin: '0 auto',
-    },
-    formCard: {
-      width: '100%',
-      maxWidth: 420,
-      background: '#fff',
-      borderRadius: 16,
-      padding: '40px 32px',
-      boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-      overflow: 'hidden',
-    },
-    formWrapper: {
-      width: '100%',
-      overflow: 'hidden',
-    },
-    action: {
-      marginLeft: '8px',
-      color: 'rgba(0, 0, 0, 0.2)',
-      fontSize: '24px',
-      verticalAlign: 'middle',
-      cursor: 'pointer',
-      transition: 'color 0.3s',
-      '&:hover': {
-        color: token.colorPrimaryActive,
-      },
-    },
-    '@media (max-width: 768px)': {
-      leftPanel: {
-        display: 'none',
-      },
-      rightPanel: {
-        flex: '1 1 100%',
-      },
-    },
-  };
-});
+import styles from './index.less';
 
 const LoginMessage: React.FC<{
   content: string;
 }> = ({ content }) => {
   return (
     <Alert
-      style={{
-        marginBottom: 24,
-      }}
+      className={styles.alertMargin}
       message={content}
       type="error"
       showIcon
@@ -206,7 +29,6 @@ const Login: React.FC = () => {
   const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
-  const { styles } = useStyles();
   const { message } = App.useApp();
 
   const fetchUserInfo = async () => {
@@ -323,11 +145,11 @@ const Login: React.FC = () => {
                 </>
               )}
 
-              <div style={{ marginBottom: 24 }}>
+              <div className={styles.autoLoginRow}>
                 <ProFormCheckbox noStyle name="autoLogin">
                   自动登录
                 </ProFormCheckbox>
-                <a style={{ float: 'right' }}>忘记密码</a>
+                <a className={styles.forgotPassword}>忘记密码</a>
               </div>
             </LoginForm>
           </div>

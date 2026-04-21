@@ -1,6 +1,7 @@
 import { FileImageOutlined } from '@ant-design/icons';
 import { Button, DatePicker, Form, Input, Modal, Select, Upload } from 'antd';
 import React from 'react';
+import styles from './RepairRequestForm.less';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -93,7 +94,7 @@ const RepairRequestForm: React.FC<RepairRequestFormProps> = ({
           label="报修日期"
           rules={[{ required: true, message: '请选择报修日期' }]}
         >
-          <DatePicker style={{ width: '100%' }} />
+          <DatePicker className={styles.fullWidth} />
         </Form.Item>
         <Form.Item
           name="faultDescription"
@@ -106,7 +107,7 @@ const RepairRequestForm: React.FC<RepairRequestFormProps> = ({
           <Upload {...uploadProps} listType="picture-card">
             <div>
               <FileImageOutlined />
-              <div style={{ marginTop: 8 }}>上传图片</div>
+              <div className={styles.uploadText}>上传图片</div>
             </div>
           </Upload>
         </Form.Item>
