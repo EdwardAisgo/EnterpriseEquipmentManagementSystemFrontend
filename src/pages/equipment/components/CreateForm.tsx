@@ -39,6 +39,9 @@ const CreateForm: React.FC<CreateFormProps> = ({
     form.validateFields().then((values) => {
       onSubmit({
         ...values,
+        purchaseDate: values.purchaseDate
+          ? values.purchaseDate.format('YYYY-MM-DD')
+          : undefined,
         purchasePrice: values.purchasePrice
           ? values.purchasePrice * 10000
           : undefined,

@@ -62,6 +62,9 @@ const MaintenanceRecordForm: React.FC<MaintenanceRecordFormProps> = ({
     form.validateFields().then((values) => {
       onSubmit({
         ...values,
+        startDate: values.startDate
+          ? values.startDate.format('YYYY-MM-DD')
+          : undefined,
         cost: values.cost ? values.cost * 10000 : undefined,
       });
     });

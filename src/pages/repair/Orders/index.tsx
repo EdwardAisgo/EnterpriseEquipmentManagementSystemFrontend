@@ -50,7 +50,7 @@ const RepairOrders: React.FC = () => {
     try {
       const res = await getRepairOrders();
       setRepairOrders(res.repairOrders || []);
-    } catch (error) {
+    } catch (_error) {
       message.error('获取维修工单失败');
     } finally {
       setLoading(false);
@@ -69,7 +69,7 @@ const RepairOrders: React.FC = () => {
       message.success('报修申请提交成功');
       setRequestVisible(false);
       fetchOrders();
-    } catch (error) {
+    } catch (_error) {
       message.error('报修申请提交失败');
     }
   };
@@ -84,7 +84,7 @@ const RepairOrders: React.FC = () => {
       message.success('派单成功');
       setAssignVisible(false);
       fetchOrders();
-    } catch (error) {
+    } catch (_error) {
       message.error('派单失败');
     }
   };
@@ -100,7 +100,7 @@ const RepairOrders: React.FC = () => {
       message.success('维修记录已保存');
       setRepairVisible(false);
       fetchOrders();
-    } catch (error) {
+    } catch (_error) {
       message.error('保存失败');
     }
   };
@@ -158,7 +158,8 @@ const RepairOrders: React.FC = () => {
       title: '维修费用（万元）',
       dataIndex: 'repairCost',
       key: 'repairCost',
-      render: (value: number) => (value ? (value / 10000).toFixed(2) : '-'),
+      render: (_: any, record: any) =>
+        record.repairCost ? (record.repairCost / 10000).toFixed(2) : '-',
     },
     {
       title: '操作',

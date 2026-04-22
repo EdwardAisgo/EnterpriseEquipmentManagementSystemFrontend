@@ -41,7 +41,10 @@ const RunningDataForm: React.FC<RunningDataFormProps> = ({
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
-      onSubmit(values);
+      onSubmit({
+        ...values,
+        date: values.date ? values.date.format('YYYY-MM-DD') : undefined,
+      });
     });
   };
 
@@ -86,7 +89,7 @@ const RunningDataForm: React.FC<RunningDataFormProps> = ({
           label="日期"
           rules={[{ required: true, message: '请选择日期' }]}
         >
-          <DatePicker className={styles.fullWidth} showTime />
+          <DatePicker className={styles.fullWidth} />
         </Form.Item>
         <Form.Item
           name="runningHours"

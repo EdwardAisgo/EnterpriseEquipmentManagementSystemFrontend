@@ -1,12 +1,4 @@
-import {
-  Button,
-  DatePicker,
-  Form,
-  Input,
-  InputNumber,
-  Modal,
-  Select,
-} from 'antd';
+import { Button, DatePicker, Form, InputNumber, Modal, Select } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { getUsers } from '@/services/business';
@@ -60,7 +52,10 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
-      const nextMaintenance = new Date(values.lastMaintenance);
+      const lastMaintenanceStr = values.lastMaintenance
+        ? values.lastMaintenance.format('YYYY-MM-DD')
+        : undefined;
+      const nextMaintenance = new Date(lastMaintenanceStr + 'T00:00:00');
       switch (values.cycleUnit) {
         case 'day':
           nextMaintenance.setDate(nextMaintenance.getDate() + values.cycle);
@@ -77,10 +72,17 @@ const MaintenancePlanForm: React.FC<MaintenancePlanFormProps> = ({
           );
           break;
       }
+      const nextMaintenanceStr = `${nextMaintenance.getFullYear()}-${String(
+        nextMaintenance.getMonth() + 1,
+      ).padStart(2, '0')}-${String(nextMaintenance.getDate()).padStart(
+        2,
+        '0',
+      )}`;
 
       onSubmit({
         ...values,
-        nextMaintenance: nextMaintenance.toISOString(),
+        lastMaintenance: lastMaintenanceStr,
+        nextMaintenance: nextMaintenanceStr,
       });
       form.resetFields();
     });

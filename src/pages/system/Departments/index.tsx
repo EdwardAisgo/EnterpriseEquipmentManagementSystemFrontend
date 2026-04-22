@@ -29,7 +29,7 @@ const DepartmentManagement: React.FC = () => {
     try {
       const res = await getDepartments(params);
       setDepartments(res.departments || []);
-    } catch (error) {
+    } catch (_error) {
       message.error('获取部门列表失败');
     } finally {
       setLoading(false);
@@ -51,7 +51,7 @@ const DepartmentManagement: React.FC = () => {
       }
       setDeptVisible(false);
       fetchDepartments();
-    } catch (error) {
+    } catch (_error) {
       message.error('操作失败');
     }
   };

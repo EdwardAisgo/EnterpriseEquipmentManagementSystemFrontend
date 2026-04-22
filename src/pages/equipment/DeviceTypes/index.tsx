@@ -29,7 +29,7 @@ const DeviceTypeManagement: React.FC = () => {
     try {
       const res = await getDeviceTypes();
       setDeviceTypes(res.deviceTypes || []);
-    } catch (error) {
+    } catch (_error) {
       message.error('获取设备类型列表失败');
     } finally {
       setLoading(false);
@@ -138,7 +138,7 @@ const DeviceTypeManagement: React.FC = () => {
             新增设备类型
           </Button>,
         ]}
-        onSubmit={(params) => fetchDeviceTypes()}
+        onSubmit={(_params) => fetchDeviceTypes()}
         onReset={() => fetchDeviceTypes()}
         options={false}
         pagination={{ pageSize: 10 }}

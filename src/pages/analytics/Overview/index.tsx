@@ -86,7 +86,7 @@ const AnalyticsOverview: React.FC = () => {
         }));
         typeChartInstance.current.setOption({ series: [{ data: typeData }] });
       }
-    } catch (error) {
+    } catch (_error) {
       message.error('获取统计数据失败');
     } finally {
       setLoading(false);

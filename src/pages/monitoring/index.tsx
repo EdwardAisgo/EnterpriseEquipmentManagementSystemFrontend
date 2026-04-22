@@ -87,7 +87,7 @@ const Monitoring: React.FC = () => {
       title: '运行日期',
       dataIndex: 'date',
       key: 'date',
-      valueType: 'dateTime',
+      valueType: 'date',
     },
     {
       title: '运行时长(h)',

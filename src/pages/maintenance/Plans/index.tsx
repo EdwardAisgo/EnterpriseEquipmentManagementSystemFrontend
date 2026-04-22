@@ -54,7 +54,7 @@ const PlanManagement: React.FC = () => {
     try {
       const res = await getMaintenancePlans();
       setMaintenancePlans(res.maintenancePlans || res.plans || []);
-    } catch (error) {
+    } catch (_error) {
       message.error('获取维护计划失败');
     } finally {
       setLoading(false);
@@ -72,7 +72,7 @@ const PlanManagement: React.FC = () => {
       message.success('维护计划创建成功');
       setPlanVisible(false);
       fetchPlans();
-    } catch (error) {
+    } catch (_error) {
       message.error('维护计划创建失败');
     }
   };
@@ -83,7 +83,7 @@ const PlanManagement: React.FC = () => {
       message.success('维护计划更新成功');
       setPlanVisible(false);
       fetchPlans();
-    } catch (error) {
+    } catch (_error) {
       message.error('维护计划更新失败');
     }
   };

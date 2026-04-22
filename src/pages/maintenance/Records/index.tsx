@@ -54,7 +54,7 @@ const RecordManagement: React.FC = () => {
     try {
       const res = await getMaintenances();
       setMaintenanceRecords(res.maintenances || []);
-    } catch (error) {
+    } catch (_error) {
       message.error('获取维护记录失败');
     } finally {
       setLoading(false);
@@ -75,7 +75,7 @@ const RecordManagement: React.FC = () => {
       message.success('维护记录添加成功');
       setRecordVisible(false);
       fetchRecords();
-    } catch (error) {
+    } catch (_error) {
       message.error('维护记录添加失败');
     }
   };
@@ -89,7 +89,7 @@ const RecordManagement: React.FC = () => {
       message.success('维护记录更新成功');
       setRecordVisible(false);
       fetchRecords();
-    } catch (error) {
+    } catch (_error) {
       message.error('维护记录更新失败');
     }
   };
@@ -138,7 +138,8 @@ const RecordManagement: React.FC = () => {
       title: '维护费用（万元）',
       dataIndex: 'cost',
       key: 'cost',
-      render: (value: number) => (value ? (value / 10000).toFixed(2) : '-'),
+      render: (_: any, record: MaintenanceRecord) =>
+        record.cost ? (record.cost / 10000).toFixed(2) : '-',
     },
     {
       title: '备注',

@@ -176,10 +176,7 @@ export async function getInitialState(): Promise<{
 }
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({
-  initialState,
-  setInitialState,
-}) => {
+export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
     avatarProps: {
       src: initialState?.currentUser?.avatar,
@@ -242,8 +239,7 @@ export const layout: RunTimeLayoutConfig = ({
       const isLast = routes.indexOf(route) === routes.length - 1;
       const label = route?.breadcrumbName ?? route?.name ?? '';
       const iconNode =
-        (initialState?.menuIconMap || {})[route?.path] ||
-        getIconNode(route?.icon);
+        initialState?.menuIconMap?.[route?.path] || getIconNode(route?.icon);
       const node =
         typeof label === 'string' ? withIconLabel(label, iconNode) : label;
       if (isLast || !route?.path) return node;

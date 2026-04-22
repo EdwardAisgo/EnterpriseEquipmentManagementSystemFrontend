@@ -24,7 +24,12 @@ const RepairRequestForm: React.FC<RepairRequestFormProps> = ({
   const [form] = Form.useForm();
   const handleSubmit = () => {
     form.validateFields().then((values) => {
-      onSubmit(values);
+      onSubmit({
+        ...values,
+        reportDate: values.reportDate
+          ? values.reportDate.format('YYYY-MM-DD')
+          : undefined,
+      });
       form.resetFields();
     });
   };

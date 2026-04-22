@@ -33,7 +33,7 @@ const RoleManagement: React.FC = () => {
     try {
       const res = await getRoles(params);
       setRoles(res.roles || []);
-    } catch (error) {
+    } catch (_error) {
       message.error('获取角色列表失败');
     } finally {
       setLoading(false);

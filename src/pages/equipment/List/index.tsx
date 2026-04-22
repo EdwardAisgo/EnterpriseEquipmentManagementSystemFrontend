@@ -59,7 +59,7 @@ const EquipmentList: React.FC = () => {
       if (res.devices) {
         setEquipmentList(res.devices);
       }
-    } catch (error) {
+    } catch (_error) {
       message.error('获取设备列表失败');
     } finally {
       setLoading(false);
@@ -124,8 +124,8 @@ const EquipmentList: React.FC = () => {
       await scrapDevice(currentEquipment.id, values.scrapReason);
       message.success('报废处理成功');
       setScrapVisible(false);
-      fetchEquipmentList();
-    } catch (error) {
+      await fetchEquipmentList();
+    } catch (_error) {
       message.error('报废处理失败');
     }
   };
@@ -139,8 +139,8 @@ const EquipmentList: React.FC = () => {
         try {
           await deleteDevice(id);
           message.success('删除成功');
-          fetchEquipmentList();
-        } catch (error) {
+          await fetchEquipmentList();
+        } catch (_error) {
           message.error('删除失败');
         }
       },
@@ -168,12 +168,14 @@ const EquipmentList: React.FC = () => {
       title: '采购时间',
       dataIndex: 'purchaseDate',
       key: 'purchaseDate',
+      valueType: 'date',
     },
     {
       title: '采购价格（万元）',
       dataIndex: 'purchasePrice',
       key: 'purchasePrice',
-      render: (value: number) => (value ? (value / 10000).toFixed(2) : '-'),
+      render: (_: any, record: EquipmentItem) =>
+        record.purchasePrice ? (record.purchasePrice / 10000).toFixed(2) : '-',
     },
     {
       title: '存放位置',

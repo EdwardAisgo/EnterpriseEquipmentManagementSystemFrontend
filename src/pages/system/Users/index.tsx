@@ -44,7 +44,7 @@ const UserManagement: React.FC = () => {
     try {
       const res = await getUsers(params);
       setUsers(res.users || []);
-    } catch (error) {
+    } catch (_error) {
       message.error('获取用户列表失败');
     } finally {
       setLoading(false);

@@ -58,7 +58,7 @@ const Login: React.FC = () => {
         status: 'error',
         type: 'account',
       });
-    } catch (error) {
+    } catch (_error) {
       message.error('登录失败，请重试！');
     }
   };

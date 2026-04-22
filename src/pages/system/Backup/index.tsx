@@ -23,7 +23,7 @@ const BackupManagement: React.FC = () => {
     try {
       const res = await getBackups();
       setBackups(res.backups || []);
-    } catch (error) {
+    } catch (_error) {
       message.error('获取备份列表失败');
     } finally {
       setLoading(false);

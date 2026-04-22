@@ -78,7 +78,12 @@ const UpdateForm: React.FC<UpdateFormProps> = ({
 
   const handleSubmit = () => {
     form.validateFields().then((fieldsValue) => {
-      onSubmit(fieldsValue);
+      onSubmit({
+        ...fieldsValue,
+        purchaseDate: fieldsValue.purchaseDate
+          ? fieldsValue.purchaseDate.format('YYYY-MM-DD')
+          : undefined,
+      });
     });
   };
 
