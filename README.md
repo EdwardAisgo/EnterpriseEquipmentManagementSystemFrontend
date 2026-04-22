@@ -73,6 +73,18 @@ npm run tsc
 npm run build
 ```
 
+## 日期交互规范
+
+前端与后端交互时，所有**业务日期字段**（如 `purchaseDate`、`lastMaintenance`、`applyDate` 等）统一以 **`YYYY-MM-DD`** 字符串格式提交与回显。
+
+- **提交前**：表单中使用 Ant Design `DatePicker`，在 `onSubmit` 前通过 `dayjs.format('YYYY-MM-DD')` 将日期对象转换为纯日期字符串，避免 ISO 时间串带来的时区漂移。
+- **回显时**：后端返回的日期字段已为 `YYYY-MM-DD` 格式；若需回显到 `DatePicker`，可通过 `dayjs(value)` 包裹（仅用于视图回显，提交时仍格式化为字符串）。
+- 涉及文件示例：
+  - `equipment/components/CreateForm.tsx`、`UpdateForm.tsx`
+  - `maintenance/components/MaintenanceRecordForm.tsx`、`MaintenancePlanForm.tsx`
+  - `repair/components/RepairRequestForm.tsx`
+  - `monitoring/components/RunningDataForm.tsx`
+
 ## 目录结构
 
 ```
