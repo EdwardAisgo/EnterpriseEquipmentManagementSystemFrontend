@@ -9,6 +9,7 @@ import { Alert, App, Tabs } from 'antd';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import { login } from '@/services/auth/api';
+import { getMyMenus } from '@/services/menu';
 import Settings from '../../../../config/defaultSettings';
 import styles from './index.less';
 
@@ -23,6 +24,18 @@ const LoginMessage: React.FC<{
       showIcon
     />
   );
+};
+
+const findFirstMenuPath = (menus: any[]): string | undefined => {
+  for (const menu of menus || []) {
+    if (menu.hideInMenu) continue;
+    if (menu.path) return menu.path;
+    if (menu.children) {
+      const childPath = findFirstMenuPath(menu.children);
+      if (childPath) return childPath;
+    }
+  }
+  return undefined;
 };
 
 const Login: React.FC = () => {
@@ -51,7 +64,18 @@ const Login: React.FC = () => {
         message.success('登录成功！');
         await fetchUserInfo();
         const urlParams = new URL(window.location.href).searchParams;
-        window.location.href = urlParams.get('redirect') || '/';
+        const redirect = urlParams.get('redirect');
+        if (redirect) {
+          window.location.href = redirect;
+          return;
+        }
+        try {
+          const menusRes = await getMyMenus();
+          const firstPath = findFirstMenuPath(menusRes.menus || []);
+          window.location.href = firstPath || '/';
+        } catch (_error) {
+          window.location.href = '/';
+        }
         return;
       }
       setUserLoginState({

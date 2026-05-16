@@ -148,7 +148,7 @@ export default [
   },
   {
     path: '/',
-    redirect: '/analytics',
+    component: './index',
   },
   {
     path: '/403',
